@@ -1,0 +1,31 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Assets</title>
+<style>
+body{background:#0C1116;color:#EAF0F5;font-family:system-ui;padding:24px}
+body.light{background:#EEF1F5;color:#0C1116}
+h2{margin:24px 0 10px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:#647280}
+.row{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.card{background:#141B22;border:1px solid #232E39;border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.light .card{background:#fff;border-color:#DDE3EA}
+.card small{font-size:11px;color:#647280}
+.people img{width:64px;height:64px;border-radius:50%}
+.comuna img{width:48px;height:54px}
+.gob img{height:36px}
+.docs img{width:52px;height:65px;border:1px solid #232E39;border-radius:4px}
+.brand img{width:40px;height:40px}
+button{position:fixed;top:16px;right:16px;padding:8px 14px;border-radius:8px;border:1px solid #2E9BE6;background:#12283B;color:#6FBEF0;font-weight:700;cursor:pointer}
+</style></head><body>
+<button onclick="document.body.classList.toggle('light')">Alternar tema</button>
+<h2>Personas</h2><div class="row people" id="people"></div>
+<h2>Escudos comunales</h2><div class="row comuna" id="comuna"></div>
+<h2>Logos institucionales</h2><div class="row gob" id="gob"></div>
+<h2>Documentos</h2><div class="row docs" id="docs"></div>
+<h2>Isotipo</h2><div class="row brand" id="brand"></div>
+<script>
+const S={people:['carla','jorge','mariapaz','inspector','rosa','ana','rodrigo','luis','maria','contraloria'],
+comuna:['nunoa','providencia','maipu','santiago','generico'],
+gob:['claveunica','firmagob','gobchile','sii','registrocivil','tesoreria'],
+docs:['pdf','plano','certificado','foto','firma'],brand:['isotipo']};
+const DIR={people:'people',comuna:'comunas',gob:'gob',docs:'docs',brand:'brand'};
+for(const k in S){const el=document.getElementById(k);el.innerHTML=S[k].map(n=>
+`<div class="card"><img src="${DIR[k]}/${n}.svg" alt="${n}"><small>${n}</small></div>`).join('');}
+</script></body></html>

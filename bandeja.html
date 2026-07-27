@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bandeja de trámites</title>
+<link rel="stylesheet" href="tokens.css">
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links">
+    <a href="index.html">Acceso</a>
+    <a href="funcionario.html">Funcionario</a>
+    <a href="bandeja.html" class="active">Bandeja</a>
+    <a href="nuevo.html">Crear</a>
+    <a href="expediente.html">Expediente</a>
+    <a href="recursos.html">Recursos</a>
+    <a href="notificaciones.html">Notificaciones</a>
+    <a href="caja.html">Caja</a>
+    <a href="fiscalizacion.html">Fiscalización</a>
+    <a href="concejo.html">Concejo</a>
+    <a href="supervisor.html">Supervisión</a>
+    <a href="admin.html">Administración</a>
+    <a href="eipd.html">EIPD</a>
+    <a href="ciudadano.html">Portal ciudadano</a>
+    <a href="movil.html">App terreno</a>
+  </nav>
+  <div class="topnav-right">
+    <button class="muni"><span class="dot">Ñ</span>Ñuñoa<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="side">
+    <div class="grp">
+      <a class="nav-item" href="funcionario.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Escritorio</a>
+      <a class="nav-item active" href="bandeja.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M3 12h18M3 17h18"/></svg>Bandeja<span class="count">36</span></a>
+      <a class="nav-item" href="expedientes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/></svg>Expedientes</a>
+      <a class="nav-item" href="nuevo.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>Crear trámite</a>
+      <a class="nav-item" href="expediente.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/></svg>Expediente</a>
+      <a class="nav-item" href="recursos.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 14l-4-4 4-4M5 10h11a4 4 0 010 8h-1"/></svg>Recursos</a>
+      <a class="nav-item" href="notificaciones.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Notificaciones<span class="count">6</span></a>
+    </div>
+    <div class="spacer"></div>
+    <div class="acct">
+      <span class="avatar av-a">CM</span>
+      <div style="flex:1;min-width:0"><div style="font-size:var(--fs-12);font-weight:600">Carla Mardones</div><div class="tiny dim">Revisora · DOM</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb"><a href="funcionario.html">DOM</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><span>Bandeja</span></div>
+    <div class="page-head">
+      <div class="titles"><h1>Bandeja de trámites</h1><p>36 trámites en la Dirección de Obras · Ñuñoa. Agrupados por estado del procedimiento.</p></div>
+      <div class="actions">
+        <div class="seg"><button class="on">Lista</button><button onclick="location.href='funcionario.html'">Tablero</button></div>
+        <a class="btn btn-primary" href="nuevo.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Crear <span class="kbd">C</span></a>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="q" placeholder="Buscar por IUIe, dirección o solicitante…"></div>
+      <div class="grow"></div>
+      <button class="chip" onclick="cycleFilter(this)" data-k="prio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>Prioridad: todas</button>
+      <button class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Ordenar: vencimiento</button>
+    </div>
+
+    <div id="results">
+      <!-- group: por vencer -->
+      <div class="list" style="margin-bottom:var(--s-4)" data-group>
+        <div class="group-head" onclick="toggleGroup(this)"><svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="var(--st-rechazado)" stroke-width="2" style="width:13px;height:13px"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>Por vencer <span class="cnt">· 2</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="g-body">
+          <a class="trow" href="expediente.html" data-s="Ampliación vivienda unifamiliar Irarrázaval Constructora Vega 004821" data-p="3"><span class="id">004821</span><span class="ttl">Ampliación vivienda unifamiliar — Av. Irarrázaval 3420</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--info)"></span>Edificación</span><span class="prio urgent"><i></i><i></i><i></i></span><span class="badge revision"><span class="g"></span>En revisión</span><span class="avatar sm av-a">CM</span><span class="date">2d</span></span></a>
+          <a class="trow" href="expediente.html" data-s="Recepción final obra Edificio Los Leones 004815 Inmobiliaria" data-p="2"><span class="id">004815</span><span class="ttl">Recepción final de obra — Edificio Los Leones 1240</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--success)"></span>Recepción</span><span class="prio high"><i></i><i></i><i></i></span><span class="badge revision"><span class="g"></span>En revisión</span><span class="avatar sm av-a">CM</span><span class="date">4d</span></span></a>
+        </div>
+      </div>
+      <!-- group: en revisión -->
+      <div class="list" style="margin-bottom:var(--s-4)" data-group>
+        <div class="group-head" onclick="toggleGroup(this)"><svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="var(--st-revision)" stroke-width="2" style="width:13px;height:13px"><circle cx="12" cy="12" r="9"/><path d="M3 12a9 9 0 019-9" stroke-width="3"/></svg>En revisión <span class="cnt">· 3</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="g-body">
+          <a class="trow" href="expediente.html" data-s="Certificado informaciones previas Manuel Montt 004802" data-p="1"><span class="id">004802</span><span class="ttl">Certificado de informaciones previas — Manuel Montt 890</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--brand)"></span>Certificado</span><span class="prio low"><i></i><i></i><i></i></span><span class="badge revision"><span class="g"></span>En revisión</span><span class="avatar sm av-c">RS</span><span class="date">1d</span></span></a>
+          <a class="trow" href="expediente.html" data-s="Patente alcoholes Restaurante El Parrón 004808" data-p="2"><span class="id">004808</span><span class="ttl">Patente de alcoholes — Restaurante «El Parrón»</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--warning)"></span>Patente</span><span class="prio high"><i></i><i></i><i></i></span><span class="badge revision"><span class="g"></span>En revisión</span><span class="avatar sm av-b">JT</span><span class="date">3d</span></span></a>
+          <a class="trow" href="expediente.html" data-s="Permiso circulación transferencia 004811" data-p="1"><span class="id">004811</span><span class="ttl">Permiso de circulación — transferencia de vehículo</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--info)"></span>Tránsito</span><span class="prio low"><i></i><i></i><i></i></span><span class="badge revision"><span class="g"></span>En revisión</span><span class="avatar sm av-d">MP</span><span class="date">2d</span></span></a>
+        </div>
+      </div>
+      <!-- group: observado -->
+      <div class="list" style="margin-bottom:var(--s-4)" data-group>
+        <div class="group-head" onclick="toggleGroup(this)"><svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="var(--st-observado)" stroke-width="2" style="width:13px;height:13px"><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/><path d="M12 8v4M12 16h.01"/></svg>Observado · esperando ciudadano <span class="cnt">· 2</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="g-body">
+          <a class="trow" href="expediente.html" data-s="Patente comercial Cafetería Grano y Hoja 004790" data-p="1"><span class="id">004790</span><span class="ttl">Patente comercial — Cafetería «Grano y Hoja»</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--warning)"></span>Patente</span><span class="prio low"><i></i><i></i><i></i></span><span class="badge observado"><span class="g"></span>Subsanación</span><span class="avatar sm av-b">JT</span><span class="date">5d</span></span></a>
+          <a class="trow" href="expediente.html" data-s="Subdivisión predial Lote 14 Villa Frei 004777" data-p="2"><span class="id">004777</span><span class="ttl">Subdivisión predial — Lote 14, Villa Frei</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--info)"></span>Loteo</span><span class="prio high"><i></i><i></i><i></i></span><span class="badge observado"><span class="g"></span>Subsanación</span><span class="avatar sm av-b">JT</span><span class="date">6d</span></span></a>
+        </div>
+      </div>
+      <!-- group: resuelto -->
+      <div class="list" data-group>
+        <div class="group-head" onclick="toggleGroup(this)"><svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="var(--st-resuelto)" stroke-width="2" style="width:13px;height:13px"><circle cx="12" cy="12" r="9" fill="var(--st-resuelto)" stroke="none"/><path d="M8 12l3 3 5-6" stroke="#04130E"/></svg>Resuelto <span class="cnt">· 2</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="g-body">
+          <a class="trow" href="expediente.html" data-s="Certificado número domiciliario 004760" data-p="1"><span class="id">004760</span><span class="ttl">Certificado de número domiciliario — Los Alerces 55</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--brand)"></span>Certificado</span><span class="badge resuelto"><span class="g"></span>Aprobado</span><span class="avatar sm av-c">RS</span><span class="date">8d</span></span></a>
+          <a class="trow" href="expediente.html" data-s="Recepción parcial obra 004744" data-p="1"><span class="id">004744</span><span class="ttl">Recepción parcial de obra — Condominio El Aguilucho</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--success)"></span>Recepción</span><span class="badge resuelto"><span class="g"></span>Aprobado</span><span class="avatar sm av-a">CM</span><span class="date">9d</span></span></a>
+        </div>
+      </div>
+    </div>
+
+    <div id="empty" class="hide" style="text-align:center;padding:var(--s-9) var(--s-4);color:var(--text-3)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:44px;height:44px;margin:0 auto var(--s-4)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <div style="color:var(--text-1);font-weight:600;font-size:var(--fs-16)">Sin resultados para «<span id="qEcho"></span>»</div>
+      <p style="margin:6px 0 var(--s-4)">No hay trámites que coincidan con tu búsqueda.</p>
+      <button class="btn btn-secondary" onclick="clearSearch()">Limpiar búsqueda</button>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+function toggleGroup(h){h.classList.toggle('collapsed');const b=h.nextElementSibling;b.querySelectorAll('.trow').forEach(r=>r.classList.toggle('collapsed'))}
+const q=document.getElementById('q');
+q.addEventListener('input',()=>{
+  const term=q.value.trim().toLowerCase();let total=0;
+  document.querySelectorAll('[data-group]').forEach(g=>{
+    let vis=0;
+    g.querySelectorAll('.trow').forEach(r=>{const m=!term||r.dataset.s.toLowerCase().includes(term);r.style.display=m?'':'none';if(m)vis++});
+    g.style.display=vis?'':'none';total+=vis;
+  });
+  document.getElementById('empty').classList.toggle('hide',total>0);
+  document.getElementById('results').classList.toggle('hide',total===0);
+  document.getElementById('qEcho').textContent=q.value;
+});
+function clearSearch(){q.value='';q.dispatchEvent(new Event('input'));q.focus()}
+const cyc=['todas','alta','urgente'];
+function cycleFilter(btn){
+  btn._i=((btn._i??0)+1)%3;const v=cyc[btn._i];
+  btn.querySelector? btn.childNodes[btn.childNodes.length-1].textContent='Prioridad: '+v:0;
+  const map={todas:null,alta:'2',urgente:'3'};let total=0;
+  document.querySelectorAll('[data-group]').forEach(g=>{let vis=0;g.querySelectorAll('.trow').forEach(r=>{const m=!map[v]||r.dataset.p===map[v];r.style.display=m?'':'none';if(m)vis++});g.style.display=vis?'':'none';total+=vis});
+}
+</script>
+<script src="flujo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

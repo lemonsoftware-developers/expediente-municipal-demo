@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Permiso de edificación · Ficha del trámite</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .fi-main{max-width:1000px;margin:0 auto;padding:var(--s-5) var(--s-5) var(--s-8)}
+  .fi-grid{display:grid;grid-template-columns:1fr 320px;gap:var(--s-6);align-items:start}
+  .fi-sec{margin-bottom:var(--s-6)}
+  .fi-sec h2{font-size:var(--fs-20);margin-bottom:var(--s-3)}
+  .fi-sec p{color:var(--text-2);text-wrap:pretty;line-height:1.6}
+  .req{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-faint)}
+  .req:last-child{border-bottom:0}
+  .req svg{width:18px;height:18px;color:var(--brand);flex-shrink:0;margin-top:1px}
+  .req .rt{font-size:var(--fs-13);color:var(--text-1)}
+  .req .rd{font-size:var(--fs-12);color:var(--text-3)}
+  .aside{position:sticky;top:68px}
+  .sumrow{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border-faint)}
+  .sumrow:last-of-type{border-bottom:0}
+  .sumrow svg{width:18px;height:18px;color:var(--text-3);flex-shrink:0}
+  .sumrow .k{font-size:var(--fs-12);color:var(--text-3)}
+  .sumrow .v{font-size:var(--fs-13);color:var(--text-1);font-weight:600;margin-left:auto;text-align:right}
+  @media(max-width:860px){.fi-grid{grid-template-columns:1fr}.aside{position:static}}
+</style>
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links">
+    <a href="index.html">Acceso</a><a href="ciudadano.html">Mis trámites</a><a href="catalogo.html">Trámites disponibles</a><a href="ficha.html" class="active">Ficha</a>
+  </nav>
+  <div class="topnav-right">
+    <a class="btn btn-secondary btn-sm" href="catalogo.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M15 18l-6-6 6-6"/></svg>Volver al catálogo</a>
+  </div>
+</header>
+
+<div class="fi-main">
+  <div class="breadcrumb"><a href="ciudadano.html">Portal</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><a href="catalogo.html">Trámites</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><span>Obras y construcción</span></div>
+
+  <div class="row" style="gap:10px;margin:6px 0 var(--s-2)"><span class="badge brand"><span class="g"></span>100% en línea</span><span class="chip" style="height:22px"><span class="dot" style="background:var(--info)"></span>Obras y construcción</span></div>
+  <h1 style="font-size:var(--fs-31);letter-spacing:-.02em;max-width:20ch">Permiso de edificación</h1>
+
+  <div class="fi-grid" style="margin-top:var(--s-6)">
+    <div>
+      <div class="fi-sec">
+        <h2>¿Qué es?</h2>
+        <p>Es la autorización que otorga la Dirección de Obras Municipales (DOM) para construir, ampliar, reparar o modificar una edificación, verificando que el proyecto cumpla la Ley General de Urbanismo y Construcciones (LGUC) y su ordenanza (OGUC).</p>
+      </div>
+      <div class="fi-sec">
+        <h2>¿A quién está dirigido?</h2>
+        <p>Al propietario del inmueble o a su representante legal (por ejemplo, la empresa constructora o un profesional con poder). Necesitas acreditar dominio sobre la propiedad.</p>
+      </div>
+      <div class="fi-sec">
+        <h2>¿Qué necesito para hacerlo?</h2>
+        <p style="margin-bottom:var(--s-3)">Reúne estos documentos antes de empezar. Podrás adjuntarlos durante el trámite.</p>
+        <div class="req"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div><div class="rt">Planos de arquitectura firmados</div><div class="rd">Por arquitecto responsable · formato PDF/A</div></div></div>
+        <div class="req"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div><div class="rt">Certificado de dominio vigente</div><div class="rd">Emitido por el Conservador de Bienes Raíces</div></div></div>
+        <div class="req"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div><div class="rt">Memoria de cálculo estructural</div><div class="rd">Firmada por ingeniero o revisor</div></div></div>
+        <div class="req"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div><div class="rt">Especificaciones técnicas</div><div class="rd">Materiales y sistemas constructivos</div></div></div>
+        <div class="banner info mt-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><p style="color:var(--text-2)">El sistema te dirá exactamente qué falta a medida que avanzas. No pierdes lo que ya cargaste.</p></div></div>
+      </div>
+      <div class="fi-sec">
+        <h2>¿Cómo y dónde se hace?</h2>
+        <p><b style="color:var(--text-1)">En línea</b>, en este portal, autenticándote con tu <b style="color:var(--text-1)">ClaveÚnica</b>. Recibirás un comprobante de ingreso con tu número único (IUIe) y podrás seguir el avance desde «Mis trámites». También puedes hacerlo presencialmente en la oficina de partes.</p>
+      </div>
+      <div class="fi-sec" style="margin-bottom:0">
+        <h2>Marco legal</h2>
+        <p class="tiny dim">Ley 21.180 (transformación digital del Estado) · Ley 19.880 (procedimiento administrativo) · LGUC / OGUC · Ley 21.719 (protección de datos).</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px">
+          <span class="gplate sm"><img src="assets/gob/oficial-gobchile.svg" alt="Gobierno de Chile"></span>
+          <span class="gplate sm"><img src="assets/gob/oficial-claveunica.svg" alt="ClaveÚnica"></span>
+          <span class="gplate sm dk"><img src="assets/gob/oficial-firmagob.png" alt="FirmaGob"></span>
+        </div>
+      </div>
+    </div>
+
+    <aside class="aside">
+      <div class="card pad-lg">
+        <div class="sumrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1v22M5 5h9a3 3 0 010 6H7a3 3 0 000 6h10"/></svg><span class="k">Costo</span><span class="v">Según superficie<br><span class="tiny dim">1,5% del presupuesto</span></span></div>
+        <div class="sumrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="k">Plazo</span><span class="v">30 días hábiles</span></div>
+        <div class="sumrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="k">Modalidad</span><span class="v">100% en línea</span></div>
+        <div class="sumrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M8 8V6a4 4 0 018 0v2"/></svg><span class="k">Requiere</span><span class="v">ClaveÚnica</span></div>
+        <a class="btn btn-primary block mt-5" href="nuevo.html" style="height:44px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>Iniciar trámite en línea</a>
+        <p class="tiny dim" style="text-align:center;margin-top:10px">Te pediremos iniciar sesión con ClaveÚnica.</p>
+      </div>
+      <button class="btn btn-ghost block mt-4" onclick="toast('Ficha guardada en favoritos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7z"/></svg>Guardar para después</button>
+    </aside>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+function toast(m){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+</script>
+<script src="app.js"></script>
+</body>
+</html>

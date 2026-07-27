@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ingresar trámite · Nuevo expediente</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* stepper horizontal */
+  .hsteps{display:flex;gap:0;list-style:none;margin:0 0 var(--s-5);padding:0;flex-wrap:wrap}
+  .hstep{display:flex;align-items:center;gap:8px;color:var(--text-3);font-size:var(--fs-12);font-weight:600;position:relative;padding:0 14px 0 0}
+  .hstep .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border-strong);display:grid;place-items:center;font-size:var(--fs-11);font-weight:700;flex-shrink:0;background:var(--surface)}
+  .hstep .t{white-space:nowrap}
+  .hstep::after{content:"";width:16px;height:1.5px;background:var(--border);margin-left:8px}
+  .hstep:last-child{padding-right:0}.hstep:last-child::after{display:none}
+  .hstep.done{color:var(--text-2)}.hstep.done .n{background:var(--brand);border-color:var(--brand);color:var(--text-on-brand)}
+  .hstep.on{color:var(--text-1)}.hstep.on .n{border-color:var(--brand);color:var(--brand-ink);box-shadow:0 0 0 3px var(--brand-soft)}
+  .wiz-panel{max-width:640px}
+  .opt-card{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:var(--r-3);background:var(--surface);cursor:pointer;margin-bottom:10px;transition:border-color .15s var(--ease),background .15s var(--ease)}
+  .opt-card:hover{border-color:var(--border-strong);background:var(--surface-2)}
+  .opt-card.sel{border-color:var(--brand);background:var(--brand-soft)}
+  .opt-card .ic{width:38px;height:38px;border-radius:var(--r-2);background:var(--surface-raised);display:grid;place-items:center;color:var(--brand);flex-shrink:0}
+  .opt-card .ic svg{width:20px;height:20px}
+  .opt-card .rc{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-strong);margin-left:auto;flex-shrink:0;display:grid;place-items:center}
+  .opt-card.sel .rc{border-color:var(--brand);background:var(--brand)}
+  .opt-card.sel .rc::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--text-on-brand)}
+  .drop{border:1.5px dashed var(--border-strong);border-radius:var(--r-3);padding:24px;text-align:center;color:var(--text-3);background:var(--surface);cursor:pointer;transition:border-color .15s var(--ease)}
+  .drop:hover{border-color:var(--brand)}
+  .wiz-bar{position:sticky;bottom:0;background:var(--bg-2);border-top:1px solid var(--border);padding:14px 0;display:flex;align-items:center;gap:12px;margin-top:var(--s-6)}
+  .wiz-bar .info{color:var(--text-3);font-size:var(--fs-12)}
+  /* modo ciudadano: sin sidebar, asistente centrado */
+  .shell.no-side{grid-template-columns:1fr}
+  .shell.no-side .side{display:none}
+  .shell.no-side .main{max-width:820px;margin:0 auto}
+  @media(max-width:640px){.hstep .t{display:none}.hstep{padding-right:6px}.hstep::after{width:10px;margin-left:4px}}
+</style>
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links"></nav>
+  <div class="topnav-right">
+    <button class="muni"><span class="dot">Ñ</span>Ñuñoa<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
+</header>
+
+<div class="shell" id="shell">
+  <aside class="side"><!-- app.js genera la navegación del rol --></aside>
+
+  <main class="main">
+    <div class="page-head">
+      <div class="titles">
+        <div class="eyebrow" id="ctxEyebrow">Dirección de Obras Municipales · Ñuñoa</div>
+        <h1 id="ctxTitle" style="font-size:var(--fs-25)">Ingresar un trámite</h1>
+        <p class="muted" id="ctxLede">Mesa de partes · ingreso de un expediente en representación del solicitante.</p>
+      </div>
+    </div>
+
+    <ol class="hsteps" id="hsteps">
+      <li class="hstep on" data-r="1"><span class="n">1</span><span class="t">Tipo de trámite</span></li>
+      <li class="hstep" data-r="2"><span class="n">2</span><span class="t">Solicitante</span></li>
+      <li class="hstep" data-r="3"><span class="n">3</span><span class="t">Antecedentes</span></li>
+      <li class="hstep" data-r="4"><span class="n">4</span><span class="t">Documentos</span></li>
+      <li class="hstep" data-r="5"><span class="n">5</span><span class="t">Revisión</span></li>
+    </ol>
+
+    <!-- step 1 -->
+    <section data-step="1">
+      <h2 style="font-size:var(--fs-20);margin-bottom:6px">¿Qué trámite se ingresa?</h2>
+      <p class="muted" style="margin-bottom:var(--s-5)">Elige el tipo. El formulario y los documentos se adaptan automáticamente a lo que exige la ley para ese trámite.</p>
+      <div class="wiz-panel">
+        <div class="opt-card sel" data-type="Permiso de edificación" data-derechos="148230" onclick="pick(this)"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M6 21V9l6-4 6 4v12M10 21v-6h4v6"/></svg></span><div><div style="font-weight:600">Permiso de edificación</div><div class="tiny dim">LGUC / OGUC · DOM</div></div><span class="rc"></span></div>
+        <div class="opt-card" data-type="Recepción de obras" data-derechos="52400" onclick="pick(this)"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span><div><div style="font-weight:600">Recepción de obras</div><div class="tiny dim">Final o parcial · DOM</div></div><span class="rc"></span></div>
+        <div class="opt-card" data-type="Patente comercial" data-derechos="0" onclick="pick(this)"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 016 0v2"/></svg></span><div><div style="font-weight:600">Patente comercial</div><div class="tiny dim">DL 3.063 · Rentas · verifica SII</div></div><span class="rc"></span></div>
+        <div class="opt-card" data-type="Certificado de informaciones previas" data-derechos="8900" onclick="pick(this)"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><div><div style="font-weight:600">Certificado de informaciones previas</div><div class="tiny dim">DOM · emisión rápida</div></div><span class="rc"></span></div>
+      </div>
+    </section>
+
+    <!-- step 2 -->
+    <section data-step="2" class="hide">
+      <h2 style="font-size:var(--fs-20);margin-bottom:6px" id="s2Title">Solicitante</h2>
+      <p class="muted" style="margin-bottom:var(--s-5)" id="s2Lede">Busca por RUT. Si el solicitante ya existe, sus datos se completan solos.</p>
+      <div class="wiz-panel">
+        <!-- banner: ingreso por tercero (solo funcionario) -->
+        <div class="banner brand" id="terceroBanner" style="margin-bottom:var(--s-4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><div class="b-body"><b>Ingreso por mesa de partes (en representación)</b><p>Estás presentando el trámite a nombre del solicitante. Él es el titular: a él se le notifica y él paga los derechos municipales. Queda registrado quién ingresó el expediente.</p></div></div>
+        <div class="field"><label>Tipo de persona</label>
+          <div class="seg" style="width:100%"><button class="on" style="flex:1" type="button">Natural</button><button style="flex:1" type="button">Jurídica</button><button style="flex:1" type="button">Apoderado</button></div></div>
+        <div class="field" id="rutF"><label>RUT del solicitante</label><input class="input" id="rut" placeholder="76.543.210-K"><div class="msg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>RUT inválido. Revisa el dígito verificador.</span></div></div>
+        <div class="g-2 grid"><div class="field"><label>Nombre / razón social</label><input class="input" placeholder="Constructora Vega Ltda."></div><div class="field"><label>Correo <span class="opt">— para notificar</span></label><input class="input" placeholder="contacto@vega.cl"></div></div>
+        <div class="banner info" id="s2Info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><b>Casos de identidad soportados</b><p>Extranjero sin RUN, persona jurídica, apoderado con mandato, herederos. El control de poderes es parte del ingreso.</p></div></div>
+      </div>
+    </section>
+
+    <!-- step 3 -->
+    <section data-step="3" class="hide">
+      <div class="eyebrow"><span id="t3">Permiso de edificación</span></div>
+      <h2 style="font-size:var(--fs-20);margin-bottom:6px">Antecedentes del trámite</h2>
+      <p class="muted" style="margin-bottom:var(--s-5)">Campos definidos por el municipio sobre la plantilla legal fija. Los marcados con punto contienen datos personales y se protegen.</p>
+      <div class="wiz-panel">
+        <div class="field"><label>Dirección del predio</label><input class="input" placeholder="Av. Irarrázaval 3420"></div>
+        <div class="g-2 grid">
+          <div class="field"><label>Rol de avalúo (SII)</label><input class="input" placeholder="1234-56"></div>
+          <div class="field"><label>Superficie a edificar (m²)</label><input class="input" placeholder="42"></div>
+        </div>
+        <div class="field"><label class="row" style="gap:6px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--danger)"></span>Nombre del propietario</label><input class="input" placeholder="—"><div class="help">Dato personal · clasificado automáticamente y cifrado.</div></div>
+        <div class="field"><label>Descripción de la obra</label><textarea class="input" style="height:80px;padding-top:10px" placeholder="Ampliación de segundo piso, reforzamiento estructural…"></textarea></div>
+      </div>
+    </section>
+
+    <!-- step 4 -->
+    <section data-step="4" class="hide">
+      <h2 style="font-size:var(--fs-20);margin-bottom:6px">Documentos requeridos</h2>
+      <p class="muted" style="margin-bottom:var(--s-5)">La lista es la que exige la norma para este trámite. Faltan 2 obligatorios.</p>
+      <div class="wiz-panel stack" style="gap:10px">
+        <div class="row between card" style="padding:12px 14px"><div class="row" style="gap:10px"><img class="doc-thumb" style="width:28px;height:35px" src="assets/docs/plano.svg" alt=""><div><div style="font-weight:600">Planos de arquitectura</div><div class="tiny dim">planos.pdf/a · firmado · 2,4 MB</div></div></div><span class="badge resuelto"><span class="g"></span>Cargado</span></div>
+        <div class="row between card" style="padding:12px 14px"><div class="row" style="gap:10px"><img class="doc-thumb" style="width:28px;height:35px" src="assets/docs/certificado.svg" alt=""><div><div style="font-weight:600">Certificado de dominio vigente</div><div class="tiny dim">cbr.pdf · 320 KB</div></div></div><span class="badge resuelto"><span class="g"></span>Cargado</span></div>
+        <div class="drop" onclick="markLoaded(this,'Memoria de cálculo estructural')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:24px;height:24px;margin:0 auto 6px;color:var(--brand)"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></svg><div style="color:var(--text-1);font-weight:600">Memoria de cálculo estructural</div><div class="tiny">Obligatorio · toca para adjuntar</div></div>
+        <div class="drop" onclick="markLoaded(this,'Especificaciones técnicas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:24px;height:24px;margin:0 auto 6px;color:var(--brand)"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></svg><div style="color:var(--text-1);font-weight:600">Especificaciones técnicas</div><div class="tiny">Obligatorio · toca para adjuntar</div></div>
+      </div>
+    </section>
+
+    <!-- step 5 -->
+    <section data-step="5" class="hide">
+      <h2 style="font-size:var(--fs-20);margin-bottom:6px">Revisión y presentación</h2>
+      <p class="muted" style="margin-bottom:var(--s-5)">Confirma los datos. Al presentar se asigna el IUIe, se ancla la versión legal y se emite el certificado de presentación firmado.</p>
+      <div class="wiz-panel">
+        <div class="card" style="margin-bottom:var(--s-4)">
+          <div class="meta-row"><span class="k">Trámite</span><span class="v" id="rv-type">Permiso de edificación</span></div>
+          <div class="meta-row"><span class="k">Solicitante</span><span class="v">Constructora Vega Ltda. · 76.543.210-K</span></div>
+          <div class="meta-row" id="rv-ingresa"><span class="k">Ingresa</span><span class="v">Carla Mardones · Mesa de partes DOM</span></div>
+          <div class="meta-row"><span class="k">Predio</span><span class="v">Av. Irarrázaval 3420, Ñuñoa</span></div>
+          <div class="meta-row"><span class="k">Documentos</span><span class="v">4 de 4 · completos</span></div>
+          <div class="meta-row"><span class="k">Derechos municipales</span><span class="v" id="rv-derechos">$148.230</span></div>
+          <div class="meta-row"><span class="k">Versión legal</span><span class="v"><span class="code">v9</span> — se ancla al presentar (0006)</span></div>
+        </div>
+        <div class="banner brand" style="margin-bottom:var(--s-4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5z"/><path d="M9 12l2 2 4-4"/></svg><div class="b-body"><b>Certificado de presentación</b><p>Se firma con FirmaGob y sella con hora SHOA. Verificable por folio + QR.</p></div></div>
+        <!-- nota de pago según quién ingresa -->
+        <div class="banner info" id="payNote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg><div class="b-body"><b id="payNoteT">Derechos: giro pagadero en caja o en línea</b><p id="payNoteP">Al presentar se emite un giro a nombre del solicitante. El expediente avanza cuando el pago se confirma (en caja municipal o pago en línea). El funcionario no cobra en ventanilla.</p></div></div>
+        <label class="row" style="gap:10px;cursor:pointer"><span class="switch on" onclick="this.classList.toggle('on')"></span><span class="tiny muted">El solicitante declara que los antecedentes son veraces (Ley 19.880).</span></label>
+      </div>
+
+      <!-- success -->
+      <div id="ok" class="hide">
+        <div class="card pad-lg" style="text-align:center;border-color:var(--brand)">
+          <div style="width:56px;height:56px;border-radius:50%;background:var(--brand-soft);display:grid;place-items:center;margin:0 auto var(--s-4)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.5" style="width:28px;height:28px"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h2 style="font-size:var(--fs-20)">Trámite ingresado</h2>
+          <p class="muted" style="margin:6px 0 var(--s-4)" id="okSub">Se asignó el identificador único y se emitió el certificado de presentación.</p>
+          <div class="code mono" style="font-size:var(--fs-16);padding:8px 14px;display:inline-block">IUIe 13120-2026-004826</div>
+
+          <!-- FUNCIONARIO: giro a caja, sin autopago, sin cruzar a portal ciudadano -->
+          <div id="okFunc" class="hide">
+            <div class="card" style="margin-top:var(--s-5);text-align:left;background:var(--surface-2)">
+              <div class="meta-row"><span class="k">Giro de derechos</span><span class="v mono">N° 2026-8842 · <span id="okGiro">$148.230</span></span></div>
+              <div class="meta-row"><span class="k">Estado</span><span class="v"><span class="badge revision"><span class="g"></span>Pendiente de pago</span></span></div>
+              <div class="meta-row" style="border:0"><span class="k">Cómo paga</span><span class="v">El solicitante paga en <b>caja municipal</b> o en línea con el folio. El pago se refleja solo en el expediente.</span></div>
+            </div>
+            <div class="row" style="gap:8px;justify-content:center;flex-wrap:wrap;margin-top:var(--s-5)">
+              <a class="btn btn-primary" href="expediente.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/></svg>Ver expediente</a>
+              <button class="btn btn-secondary" onclick="toast('Imprimiendo giro / orden de pago (PDF)')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>Imprimir giro</button>
+            </div>
+            <div style="text-align:center;margin-top:var(--s-3)"><a class="btn btn-ghost btn-sm" href="bandeja.html">Volver a la bandeja</a></div>
+          </div>
+
+          <!-- CIUDADANO: autopago en línea -->
+          <div id="okCiud" class="hide">
+            <p class="tiny dim" style="margin-top:var(--s-3)">Paga los derechos ahora para que tu trámite empiece a tramitarse, o hazlo después desde «Mis trámites».</p>
+            <div class="row" style="gap:8px;justify-content:center;flex-wrap:wrap;margin-top:var(--s-4)">
+              <a class="btn btn-secondary" href="comprobante.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Descargar comprobante</a>
+              <a class="btn btn-primary" href="pago.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg>Pagar derechos en línea</a>
+            </div>
+            <div style="text-align:center;margin-top:var(--s-3)"><a class="btn btn-ghost btn-sm" href="ciudadano.html">Ir a mis trámites</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="wiz-bar" id="wizBar">
+      <button class="btn btn-ghost" id="backBtn" onclick="step(-1)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Atrás</button>
+      <span class="info" id="progress">Paso 1 de 5</span>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" id="draftBtn">Guardar borrador</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="step(1)">Continuar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+/* ---- rol del actor (lo fija app.js en páginas previas; aquí adaptamos el flujo) ---- */
+var ROLE = (function(){ try{ return localStorage.getItem('fvRole')||'funcionario'; }catch(e){ return 'funcionario'; } })();
+var IS_CIUD = ROLE==='ciudadano';
+(function initRoleUI(){
+  var shell=document.getElementById('shell');
+  if(IS_CIUD){
+    shell.classList.add('no-side');
+    document.getElementById('ctxEyebrow').textContent='Trámite en línea · con ClaveÚnica';
+    document.getElementById('ctxTitle').textContent='Nuevo trámite';
+    document.getElementById('ctxLede').textContent='Completa el formulario paso a paso. Nunca pierdes lo que escribes.';
+    document.getElementById('terceroBanner').classList.add('hide');
+    document.getElementById('s2Title').textContent='Tus datos';
+    document.getElementById('s2Lede').textContent='Vienen de tu ClaveÚnica. Confírmalos y agrega un correo de contacto.';
+    document.getElementById('s2Info').classList.add('hide');
+    var ri=document.getElementById('rv-ingresa'); if(ri) ri.classList.add('hide');
+    // nota de pago en línea
+    document.getElementById('payNoteT').textContent='Derechos: se pagan en línea';
+    document.getElementById('payNoteP').textContent='Al presentar podrás pagar los derechos con Webpay para que tu trámite comience de inmediato. También puedes pagar después desde «Mis trámites».';
+  }
+})();
+
+function toast(m){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function money(n){return '$'+(n||0).toLocaleString('es-CL')}
+let cur=1;const max=5;let chosen='Permiso de edificación';let derechos=148230;
+function pick(el){
+  document.querySelectorAll('.opt-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');
+  chosen=el.dataset.type; derechos=+el.dataset.derechos||0;
+  document.getElementById('t3').textContent=chosen;
+  document.getElementById('rv-type').textContent=chosen;
+  document.getElementById('rv-derechos').textContent = derechos>0?money(derechos):'Exento / según cálculo';
+}
+function validRut(v){const c=v.replace(/[.\-]/g,'').toUpperCase();if(c.length<8)return false;const b=c.slice(0,-1),dv=c.slice(-1);if(!/^\d+$/.test(b))return false;let s=0,m=2;for(let i=b.length-1;i>=0;i--){s+=parseInt(b[i])*m;m=m===7?2:m+1}const r=11-(s%11);return (r===11?'0':r===10?'K':''+r)===dv}
+function render(){
+  document.querySelectorAll('[data-step]').forEach(s=>s.classList.toggle('hide',+s.dataset.step!==cur));
+  document.querySelectorAll('.hstep').forEach(s=>{const n=+s.dataset.r;s.classList.toggle('done',n<cur);s.classList.toggle('on',n===cur)});
+  document.getElementById('progress').textContent='Paso '+cur+' de '+max;
+  document.getElementById('backBtn').disabled=cur===1;
+  const nb=document.getElementById('nextBtn');
+  nb.innerHTML = cur===max ? 'Presentar trámite<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>' : 'Continuar<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';
+}
+function step(d){
+  if(d>0&&cur===2){const rut=document.getElementById('rut');if(rut&&!rut.readOnly&&rut.value&&!validRut(rut.value)){document.getElementById('rutF').classList.add('invalid');rut.focus();return}}
+  if(d>0&&cur===max){presentar();return}
+  cur=Math.min(max,Math.max(1,cur+d));render();window.scrollTo({top:0,behavior:'smooth'});
+}
+function presentar(){
+  document.querySelector('[data-step="5"] .wiz-panel').classList.add('hide');
+  document.getElementById('ok').classList.remove('hide');
+  document.getElementById('okGiro').textContent = derechos>0?money(derechos):'según cálculo';
+  document.getElementById(IS_CIUD?'okCiud':'okFunc').classList.remove('hide');
+  document.getElementById('okSub').textContent = IS_CIUD
+    ? 'Guardamos tu solicitud y emitimos el certificado de presentación.'
+    : 'El expediente entró a la bandeja de la unidad y se emitió el giro de derechos a nombre del solicitante.';
+  document.getElementById('wizBar').style.display='none';
+  document.querySelectorAll('.hstep').forEach(s=>s.classList.add('done'));
+  toast('IUIe asignado · certificado firmado');
+}
+function markLoaded(el,name){el.outerHTML='<div class="row between card" style="padding:12px 14px"><div class="row" style="gap:10px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" style="width:18px;height:18px"><path d="M20 6L9 17l-5-5"/></svg><div><div style="font-weight:600">'+name+'</div><div class="tiny dim">documento.pdf/a · cargado</div></div></div><span class="badge resuelto"><span class="g"></span>Cargado</span></div>';toast(name+' adjuntado')}
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{const p=b.parentElement;p.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});
+// guardar borrador vuelve al inicio del propio rol (sin cruzar de rol)
+document.getElementById('draftBtn').onclick=function(){ location.href = IS_CIUD?'ciudadano.html':'bandeja.html'; };
+render();
+</script>
+<script src="form-ciudadano.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

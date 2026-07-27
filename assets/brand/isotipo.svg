@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Expediente Municipal">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3FAAF0"/><stop offset="1" stop-color="#1E77BE"/></linearGradient></defs>
+  <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#g)"/>
+  <path d="M11 8h7l4 4v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 10 21V9.5A1.5 1.5 0 0 1 11 8Z" fill="#EAF4FB"/>
+  <path d="M18 8l4 4h-3a1 1 0 0 1-1-1Z" fill="#BEDDF3"/>
+  <path d="M12.5 19.5l2.2 2.2 4.8-5" stroke="#1E77BE" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

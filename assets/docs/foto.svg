@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 60" role="img" aria-label="Fotografía de inspección">
+  <path d="M6 2h26l10 10v44a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" fill="#FFFFFF" stroke="#D0D8E0" stroke-width="1.4"/>
+  <rect x="8" y="10" width="32" height="30" rx="2" fill="#BFE0C8"/>
+  <path d="M8 40v-6l7-7 6 6 8-9 11 12v4a0 0 0 0 1 0 0Z" fill="#5FA97A"/>
+  <rect x="24" y="16" width="10" height="12" fill="#8C6A4A"/>
+  <path d="M23 16h12l-6-5Z" fill="#6E4E34"/>
+  <circle cx="14" cy="17" r="3.2" fill="#F4D06A"/>
+  <rect x="4" y="46" width="26" height="8" rx="1.5" fill="#3DA06A"/>
+  <text x="17" y="52" text-anchor="middle" font-family="Arial,sans-serif" font-size="6.5" font-weight="800" fill="#FFFFFF">FOTO</text>
+</svg>

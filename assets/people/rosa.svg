@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Rosa Donoso">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7C5AC0"/><stop offset="1" stop-color="#573C93"/>
+    </linearGradient>
+    <clipPath id="c"><circle cx="48" cy="48" r="48"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="96" height="96" fill="url(#g)"/>
+    <path d="M6 96C6 74 22 64 48 64s42 10 42 32Z" fill="#E9E6EF"/>
+    <path d="M28 96C30 78 36 70 48 70s18 8 20 26Z" fill="#4C3F63"/>
+    <path d="M42 58h12v10a6 6 0 0 1-12 0Z" fill="#DCA97F"/>
+    <path d="M30 44c-1-13 8-21 18-21s19 8 18 21c-1 5-3 8-5 12 0-8-2-13-5-15-6 4-16 4-21 0-2 3-3 8-2 15-2-4-3-7-3-12Z" fill="#B9BEC6"/>
+    <ellipse cx="48" cy="46" rx="15.5" ry="17.5" fill="#EFC49B"/>
+    <path d="M31 40c-2 11 2 20 5 25-5-4-8-13-7-24ZM65 40c2 11-2 20-5 25 5-4 8-13 7-24Z" fill="#C7CBD2"/>
+    <circle cx="41" cy="46" r="2" fill="#33261C"/>
+    <circle cx="55" cy="46" r="2" fill="#33261C"/>
+    <g stroke="#3A3F49" stroke-width="1.6" fill="none">
+      <circle cx="41" cy="46" r="5.5"/><circle cx="55" cy="46" r="5.5"/><path d="M46.5 46h3M35.5 45l-3-1M60.5 45l3-1"/>
+    </g>
+    <path d="M37 39c2-1 5-1 7 0M52 39c2-1 5-1 7 0" stroke="#9A8A6E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M44 55c2.5 2 5.5 2 8 0" stroke="#B07152" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

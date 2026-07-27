@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Constructor de tipo de trámite</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .cn{display:grid;grid-template-columns:260px 1fr;max-width:1180px;margin:0 auto;min-height:calc(100vh - 52px)}
+  .cn-rail{border-right:1px solid var(--border);padding:var(--s-5) var(--s-3)}
+  .cn-sec{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;padding:9px 10px;border-radius:var(--r-2);color:var(--text-2);font-family:var(--font-ui);font-size:var(--fs-13);font-weight:600;cursor:pointer}
+  .cn-sec svg{width:16px;height:16px;color:var(--text-3)}
+  .cn-sec:hover{background:var(--surface-2);color:var(--text-1)}
+  .cn-sec.on{background:var(--surface-raised);color:var(--text-1)}.cn-sec.on svg{color:var(--brand)}
+  .cn-sec .dot{margin-left:auto;width:8px;height:8px;border-radius:50%}
+  .cn-main{padding:var(--s-6) var(--s-7);padding-bottom:96px}
+  .cn-panel{max-width:680px}
+  .locked{border:1px solid var(--border);border-radius:var(--r-3);background:var(--surface);padding:var(--s-4);position:relative}
+  .locked::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent,transparent 10px,rgba(255,255,255,.012) 10px,rgba(255,255,255,.012) 20px);border-radius:var(--r-3);pointer-events:none}
+  .lrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-faint);font-size:var(--fs-13)}
+  .lrow:last-child{border-bottom:0}
+  .lrow svg{width:16px;height:16px;color:var(--brand);flex-shrink:0}
+  .frow{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-2);background:var(--surface);margin-bottom:8px}
+  .frow .fn{font-weight:600;font-size:var(--fs-13)}
+  .frow .ft{font-size:var(--fs-11);color:var(--text-3)}
+  .frow.pii{border-color:#40320F;background:var(--warning-soft)}
+  .frow.ok{border-color:#123B31}
+  .flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+  .flow::-webkit-scrollbar{display:none}
+  .fnode{min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-3);padding:12px;flex-shrink:0}
+  .fnode .fh{font-size:var(--fs-11);text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);font-weight:700}
+  .fnode .ft2{font-weight:600;font-size:var(--fs-13);margin:4px 0 8px}
+  .fconn{display:flex;align-items:center;color:var(--text-3);flex-shrink:0;padding:0 4px}
+  .fadd{min-width:120px;border:1.5px dashed var(--border-strong);border-radius:var(--r-3);display:grid;place-items:center;color:var(--text-3);cursor:pointer;flex-shrink:0}
+  .fadd:hover{border-color:var(--brand);color:var(--brand-ink)}
+  .gaterow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-faint)}
+  .gaterow svg{width:20px;height:20px;flex-shrink:0}
+  .cn-bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg-2);border-top:1px solid var(--border);padding:12px var(--s-7);display:flex;align-items:center;gap:12px;z-index:20}
+  @media(max-width:860px){
+    .cn{grid-template-columns:1fr}
+    /* rail como tabs horizontales scrolleables (NO ocultarlo: era la única navegación entre secciones) */
+    .cn-rail{border-right:0;border-bottom:1px solid var(--border);padding:8px var(--s-3);display:flex;gap:6px;overflow-x:auto;position:sticky;top:52px;background:var(--bg-2);z-index:15;scrollbar-width:none}
+    .cn-rail::-webkit-scrollbar{display:none}
+    .cn-rail .breadcrumb{display:none}
+    .cn-sec{width:auto;white-space:nowrap;flex-shrink:0;padding:8px 12px}
+    .cn-sec .dot{margin-left:6px}
+    .cn-main{padding:var(--s-4);padding-bottom:110px}
+  }
+
+  /* ---- Editor de flujo (máquina de estados) ---- */
+  .flow-editor{position:relative}
+  .fe-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .fe-add{display:flex;gap:8px}
+  .fe-legend{display:flex;gap:12px}
+  .fe-lg{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-11);color:var(--text-3);font-weight:600}
+  .fe-lg i{width:8px;height:8px;border-radius:50%}
+  .fe-grow{flex:1}
+  #feSaved.dirty{color:var(--warning)}
+  .fe-body{display:grid;grid-template-columns:1fr 288px;gap:14px;align-items:start}
+  .fe-canvas{position:relative;height:440px;overflow:auto;border:1px solid var(--border);border-radius:var(--r-3);
+    background:radial-gradient(circle at 1px 1px, var(--border-faint) 1px, transparent 0) 0 0/22px 22px, var(--bg-2);
+    scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent}
+  .fe-canvas::-webkit-scrollbar{width:10px;height:10px}
+  .fe-canvas::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:var(--r-pill);border:2px solid var(--bg-2)}
+  .fe-canvas::-webkit-scrollbar-track{background:transparent}
+  .fe-svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+  .fe-edge-hit{stroke:transparent;stroke-width:16;fill:none;pointer-events:stroke;cursor:pointer}
+  .fe-edge{stroke:var(--border-strong);stroke-width:1.6;fill:none;pointer-events:none}
+  .fe-edge.sel{stroke:var(--brand);stroke-width:2}
+  .fe-linkline{stroke:var(--brand);stroke-width:2;stroke-dasharray:4 3;fill:none}
+  .fe-edge-lbl{fill:var(--brand-ink);font-size:9px;font-family:var(--font-mono);text-anchor:middle}
+  .fe-node{position:absolute;width:156px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--nc,var(--brand));border-radius:var(--r-3);padding:10px 12px;cursor:grab;user-select:none;box-shadow:var(--sh-sm);touch-action:none}
+  .fe-node:hover{border-color:var(--border-strong)}
+  .fe-node.sel{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-soft)}
+  .fe-node.legal{background:var(--surface-2)}
+  .fe-node-h{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .fe-type{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);font-weight:700}
+  .fe-lock{margin-left:auto;color:var(--text-3)}.fe-lock svg{width:12px;height:12px}
+  .fe-node-t{font-size:var(--fs-13);font-weight:600;color:var(--text-1);line-height:1.2;overflow-wrap:anywhere}
+  .fe-node-r{font-size:var(--fs-11);color:var(--text-2);margin-top:3px}
+  .fe-warn-txt{color:var(--warning)}
+  .fe-out{position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:var(--surface-raised);border:2px solid var(--brand);cursor:crosshair}
+  .fe-out:hover{background:var(--brand)}
+  .fe-inspector{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-3);padding:14px;min-height:200px}
+  .fe-insp-empty{color:var(--text-3);text-align:center;padding:20px 6px}
+  .fe-insp-empty svg{width:30px;height:30px;margin:0 auto 10px;color:var(--text-3)}
+  .fe-insp-empty p{font-size:var(--fs-12);line-height:1.5}
+  .fe-insp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .fe-insp-eye{font-size:var(--fs-11);text-transform:uppercase;letter-spacing:.06em;color:var(--brand-ink);font-weight:700}
+  .fe-field{margin-bottom:12px}
+  .fe-field label{display:block;font-size:var(--fs-12);font-weight:600;margin-bottom:5px}
+  .fe-field.err .input{border-color:var(--danger)}
+  .fe-msg{display:block;font-size:var(--fs-11);color:var(--danger);margin-top:4px}
+  .fe-ro{font-size:var(--fs-13);color:var(--text-2);padding:6px 0}
+  .input-sm{height:30px;font-size:var(--fs-12)}
+  .fe-seg{display:flex;gap:4px}
+  .fe-seg button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;height:30px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2);border-radius:var(--r-2);font-size:var(--fs-11);font-weight:600}
+  .fe-seg button i{width:7px;height:7px;border-radius:50%}
+  .fe-seg button.on{border-color:var(--brand);color:var(--text-1);background:var(--brand-soft)}
+  .fe-sub{font-size:var(--fs-11);text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);font-weight:700;margin:14px 0 8px}
+  .fe-req{display:grid;grid-template-columns:1fr 92px 22px;gap:6px;margin-bottom:6px;align-items:center}
+  .fe-req.err .input{border-color:var(--danger)}
+  .fe-x{background:transparent;border:0;color:var(--text-3);font-size:14px;cursor:pointer;padding:2px;line-height:1}
+  .fe-x:hover{color:var(--danger)}
+  .fe-flowline{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .fe-check{display:flex;gap:10px;padding:8px 0;cursor:pointer;align-items:flex-start}
+  .fe-check input{margin-top:3px;accent-color:var(--brand)}
+  .fe-check b{font-size:var(--fs-12);font-weight:600}
+  .fe-check p{font-size:var(--fs-11);color:var(--text-3);margin-top:1px}
+  .fe-problems{margin-top:12px;border:1px solid var(--border);border-radius:var(--r-3);background:var(--surface);padding:10px 12px}
+  .fe-prob-ok{display:flex;align-items:center;gap:8px;font-size:var(--fs-12);color:var(--success);font-weight:600}
+  .fe-prob-ok svg{width:16px;height:16px}
+  .fe-prob-head{display:flex;gap:8px;margin-bottom:8px}
+  .fe-prob-count{font-size:var(--fs-11);font-weight:700;padding:2px 8px;border-radius:var(--r-pill)}
+  .fe-prob-count.err{background:var(--danger-soft);color:#F0999C}
+  .fe-prob-count.warn{background:var(--warning-soft);color:#F0C783}
+  .fe-prob-list{display:flex;flex-direction:column;gap:4px}
+  .fe-prob{display:flex;align-items:flex-start;gap:8px;text-align:left;background:transparent;border:0;padding:6px;border-radius:var(--r-2);color:var(--text-2);font-size:var(--fs-12);width:100%;font-family:inherit}
+  .fe-prob svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+  .fe-prob.nav{cursor:pointer}
+  .fe-prob.nav:hover{background:var(--surface-2);color:var(--text-1)}
+  .fe-menu{position:absolute;z-index:30;width:290px;background:var(--overlay);border:1px solid var(--border-strong);border-radius:var(--r-3);box-shadow:var(--sh-lg);padding:6px}
+  .fe-menu-hd{font-size:var(--fs-11);text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);font-weight:700;padding:6px 8px}
+  .fe-menu button{display:block;width:100%;text-align:left;background:transparent;border:0;padding:8px;border-radius:var(--r-2);cursor:pointer}
+  .fe-menu button:hover{background:var(--surface-2)}
+  .fe-menu button b{display:block;font-size:var(--fs-12);color:var(--text-1);font-weight:600}
+  .fe-menu button span{display:block;font-size:var(--fs-11);color:var(--text-3);margin-top:1px}
+  @media(max-width:860px){.fe-body{grid-template-columns:1fr}}
+
+  /* ---- Formulario ciudadano (form builder) ---- */
+  .fb-empty{padding:16px;text-align:center;color:var(--text-3);font-size:var(--fs-12);border:1px dashed var(--border-strong);border-radius:var(--r-3)}
+  .fb-req{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r-2);background:var(--surface);margin-bottom:8px}
+  .fb-req.exc{border-color:#40320F;background:var(--warning-soft)}
+  .fb-req-ic{width:16px;height:16px;flex-shrink:0;color:var(--text-3)}
+  .fb-req.exc .fb-req-ic{color:var(--warning)}
+  .fb-inl{flex:1;min-width:0;background:transparent;border:0;border-bottom:1px solid transparent;color:var(--text-1);font-size:var(--fs-13);font-family:inherit;padding:4px 2px;outline:none}
+  .fb-inl:hover{border-bottom-color:var(--border)}
+  .fb-inl:focus{border-bottom-color:var(--brand)}
+  .fb-toggle{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-11);color:var(--text-2);font-weight:600;white-space:nowrap;cursor:pointer}
+  .fb-toggle input{accent-color:var(--warning)}
+  .fb-steps{display:flex;flex-direction:column;gap:12px}
+  .fb-step{border:1px solid var(--border);border-radius:var(--r-3);background:var(--surface);overflow:hidden}
+  .fb-step.dragging{opacity:.45}
+  .fb-step.drop-over{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+  .fb-step-h{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border-faint);background:var(--surface-2)}
+  .fb-drag{color:var(--text-3);cursor:grab;font-size:13px;letter-spacing:-3px;user-select:none;flex-shrink:0;padding-right:2px}
+  .fb-drag:active{cursor:grabbing}
+  .fb-step-ic{width:18px;height:18px;flex-shrink:0}.fb-step-ic svg{width:18px;height:18px}
+  .fb-step-name{font-weight:600}
+  .fb-cond{padding:10px 12px 0}
+  .fb-cond-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px dashed var(--border-strong);border-radius:var(--r-pill);padding:4px 10px;color:var(--text-3);font-size:var(--fs-11);font-family:inherit;cursor:pointer}
+  .fb-cond-btn svg{width:13px;height:13px}
+  .fb-cond-btn:hover{color:var(--brand-ink);border-color:var(--brand)}
+  .fb-step-body{padding:12px}
+  .fb-fields{display:flex;flex-direction:column;gap:8px}
+  .fb-field{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-2);background:var(--bg-2)}
+  .fb-field.pii{border-color:#40320F;background:var(--warning-soft)}
+  .fb-field.dragging{opacity:.45}
+  .fb-field-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+  .fb-field-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .fb-mini{height:26px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-1);color:var(--text-1);font-size:var(--fs-11);font-family:inherit;padding:0 6px;outline:none}
+  .fb-mini:focus{border-color:var(--brand)}
+  .fb-opts{flex:1;min-width:130px}
+  .fb-mini-chk{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-11);color:var(--text-2);font-weight:600;cursor:pointer;white-space:nowrap}
+  .fb-mini-chk input{accent-color:var(--brand)}
+  .fb-mini-chk.pii{color:var(--warning)}.fb-mini-chk.pii input{accent-color:var(--warning)}
+  .fb-doc-ic{flex-shrink:0;padding-top:2px}
+  .fb-add-field{display:inline-flex;align-items:center;gap:6px;margin-top:8px;background:transparent;border:0;color:var(--brand-ink);font-size:var(--fs-12);font-weight:600;font-family:inherit;cursor:pointer;padding:4px}
+  .fb-add-field svg{width:14px;height:14px}
+  .fb-inline-2{display:flex;gap:10px}
+  .fb-lbl{display:flex;flex-direction:column;gap:5px;font-size:var(--fs-12);font-weight:600;color:var(--text-1);flex:1}
+  .fb-inl2{height:34px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2);color:var(--text-1);font-size:var(--fs-13);font-family:inherit;padding:0 10px;outline:none;font-weight:400;width:100%}
+  textarea.fb-inl2{height:auto;padding:8px 10px}
+  .fb-inl2:focus{border-color:var(--brand)}
+  .fb-note{font-size:var(--fs-11);color:var(--text-3);margin-top:8px;padding:8px 10px;background:var(--surface-2);border-radius:var(--r-2)}
+
+  /* vista previa ciudadana */
+  .fb-preview{max-width:520px;width:100%}
+  .pv-progress{height:4px;background:var(--surface-raised);border-radius:var(--r-pill);overflow:hidden;margin-bottom:16px}
+  .pv-progress-bar{height:100%;background:var(--brand);transition:width .3s var(--ease)}
+  .pv-step-head{margin-bottom:6px}
+  .pv-eyebrow{font-size:var(--fs-11);text-transform:uppercase;letter-spacing:.06em;color:var(--brand-ink);font-weight:700}
+  .pv-step-head h4{font-size:var(--fs-20);margin-top:3px}
+  .pv-muted{color:var(--text-2);font-size:var(--fs-13);margin:6px 0 14px}
+  .pv-reqs{display:flex;flex-direction:column;gap:8px}
+  .pv-req{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-2);font-size:var(--fs-13);cursor:pointer}
+  .pv-req input{margin-top:2px;accent-color:var(--brand)}
+  .pv-exc{color:var(--warning);font-size:var(--fs-11);text-transform:uppercase;letter-spacing:.04em}
+  .pv-block{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:var(--r-2);background:var(--danger-soft);border:1px solid #40191C;color:#F0999C;font-size:var(--fs-13)}
+  .pv-block svg{width:18px;height:18px;flex-shrink:0}
+  .pv-nav{display:flex;align-items:center;gap:8px;margin-top:20px}
+  .pv-form{display:flex;flex-direction:column;gap:14px}
+  .pv-field{display:flex;flex-direction:column;gap:6px}
+  .pv-flabel{font-size:var(--fs-13);font-weight:600;color:var(--text-1)}
+  .pv-req-star{color:var(--danger)}
+  .pv-pii{font-size:var(--fs-11);color:var(--warning);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .pv-help{font-size:var(--fs-12);color:var(--text-3)}
+  .pv-chk{display:inline-flex;align-items:center;gap:8px;font-size:var(--fs-13)}.pv-chk input{accent-color:var(--brand)}
+  .pv-upload{display:flex;align-items:center;gap:8px;padding:14px;border:1.5px dashed var(--border-strong);border-radius:var(--r-2);color:var(--text-3);font-size:var(--fs-12);cursor:pointer}
+  .pv-upload svg{width:18px;height:18px}
+  .pv-upload:hover{border-color:var(--brand);color:var(--brand-ink)}
+  .pv-upload.done{border-style:solid;border-color:#123B31;color:var(--success)}
+  .pv-docs{display:flex;flex-direction:column;gap:10px}
+  .pv-doc{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--r-2)}
+  .pv-doc-ic svg{width:22px;height:22px;color:var(--text-3)}
+  .pv-updbtn.done{color:var(--success)}
+  .pv-pay{padding:16px;border:1px solid var(--border);border-radius:var(--r-3);background:var(--surface-2)}
+  .pv-pay-amt{display:flex;flex-direction:column;gap:4px}.pv-pay-amt b{font-size:var(--fs-20);color:var(--text-1)}
+  .pv-sign{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--border);border-radius:var(--r-3)}
+  .pv-sign svg{width:32px;height:32px;flex-shrink:0}
+  .pv-info{padding:14px;background:var(--surface-2);border-radius:var(--r-2);font-size:var(--fs-13);color:var(--text-2);white-space:pre-wrap}
+  .pv-done{text-align:center;padding:20px 10px}
+  .pv-done svg{width:44px;height:44px;margin:0 auto 12px}
+  .pv-done h4{font-size:var(--fs-20);margin-bottom:8px}
+  /* origen / interoperabilidad (once-only) */
+  .fb-origen{max-width:172px;color:var(--text-2)}
+  .fb-origen.sys{border-color:var(--brand);color:var(--brand-ink);background:var(--brand-soft)}
+  .pv-src{display:inline-flex;align-items:center;font-size:var(--fs-11);color:var(--brand-ink);background:var(--brand-soft);border-radius:var(--r-pill);padding:1px 8px;font-weight:600;white-space:nowrap}
+  .pv-req.sys{background:var(--success-soft);border-color:#123B31}
+  .pv-req.sys svg{width:18px;height:18px;flex-shrink:0;margin-top:1px}
+  .pv-prefill{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-2)}
+  .pv-prefill-v{font-weight:600;color:var(--text-1);font-size:var(--fs-13)}
+  .pv-doc.sys{background:var(--success-soft);border-color:#123B31}
+  .pv-doc.sys .pv-doc-ic svg{color:var(--success)}
+  /* versiones */
+  .ver-row{display:flex;align-items:center;gap:14px;padding:11px 12px;border:1px solid var(--border);border-radius:var(--r-2);margin-bottom:8px}
+  .ver-row.cur{border-color:var(--brand);background:var(--brand-soft)}
+  .ver-v{font-family:var(--font-mono);font-size:var(--fs-16);font-weight:700;color:var(--text-1);width:44px;flex-shrink:0}
+  .ver-est{margin-bottom:4px}
+  .badge.publicada{background:var(--surface-raised);color:var(--text-2)}.badge.publicada .g{background:var(--text-3)}
+</style>
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links">
+    <a href="index.html">Acceso</a><a href="funcionario.html">Funcionario</a><a href="bandeja.html">Bandeja</a><a href="tipos.html">Tipos</a><a href="constructor.html" class="active">Constructor</a><a href="caja.html">Caja</a><a href="supervisor.html">Supervisión</a><a href="admin.html">Administración</a><a href="ciudadano.html">Portal ciudadano</a><a href="movil.html">App terreno</a>
+  </nav>
+  <div class="topnav-right">
+    <button class="muni"><span class="dot">Ñ</span>Ñuñoa<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
+</header>
+
+<div class="cn">
+  <aside class="cn-rail">
+    <div class="breadcrumb" style="margin-bottom:var(--s-4)"><a href="tipos.html">Tipos de trámite</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><span>Editar</span></div>
+    <button class="cn-sec on" data-s="datos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg>Datos básicos</button>
+    <button class="cn-sec" data-s="legal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Núcleo legal <span class="dot" style="background:var(--text-3)"></span></button>
+    <button class="cn-sec" data-s="requisitos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h2"/><path d="M9 13l2 2 4-4"/></svg>Requisitos</button>
+    <button class="cn-sec" data-s="form"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Formulario ciudadano <span class="dot" id="dotForm" style="background:var(--warning)"></span></button>
+    <button class="cn-sec" data-s="flujo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M8 6h8M6 8v6a2 2 0 002 2h2M18 8v6a2 2 0 01-2 2h-2"/></svg>Flujo interno <span class="dot" id="dotFlujo" style="background:var(--success)"></span></button>
+    <button class="cn-sec" data-s="notif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Notificaciones</button>
+    <button class="cn-sec" data-s="temporal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Aplicación temporal</button>
+    <button class="cn-sec" data-s="publicar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12M7 8l5-5 5 5M5 21h14"/></svg>Publicar <span class="dot" id="dotPub" style="background:var(--danger)"></span></button>
+  </aside>
+
+  <main class="cn-main">
+    <!-- datos -->
+    <section data-sec="datos">
+      <div class="eyebrow">Configuración · no-code</div>
+      <h1 style="font-size:var(--fs-25);margin-bottom:6px">Permiso de edificación</h1>
+      <p class="muted" style="margin-bottom:var(--s-5)">Editas lo no-legal. El núcleo legal viene fijo y lo mantiene Lemon.</p>
+      <div class="cn-panel">
+        <div class="field"><label>Nombre del tipo de trámite</label><input class="input" value="Permiso de edificación"></div>
+        <div class="g-2 grid"><div class="field"><label>Unidad / área</label><select class="input" style="appearance:none"><option>DOM — Obras Municipales</option><option>Rentas y Patentes</option><option>DIDECO</option></select></div>
+        <div class="field"><label>Base legal</label><input class="input" value="LGUC / OGUC"></div></div>
+        <div class="field" style="margin-bottom:0"><label>Descripción para el ciudadano</label><textarea class="input" style="height:80px;padding-top:10px">Permiso para construir, ampliar o modificar una edificación conforme a la Ley General de Urbanismo y Construcciones.</textarea></div>
+      </div>
+    </section>
+
+    <!-- legal -->
+    <section data-sec="legal" class="hide">
+      <div class="eyebrow">Núcleo legal · fijo</div>
+      <h1 style="font-size:var(--fs-25);margin-bottom:6px">Lo que la ley obliga</h1>
+      <p class="muted" style="margin-bottom:var(--s-5)">Bloqueado y mantenido por Lemon. No lo puedes editar — así ningún trámite del municipio incumple.</p>
+      <div class="cn-panel locked">
+        <div class="row" style="gap:8px;margin-bottom:var(--s-3)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.8" style="width:16px;height:16px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span class="tiny dim">Mantenido por Lemon · versión legal v9</span></div>
+        <div class="lrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Identificador único (IUIe) asignado al ingresar</div>
+        <div class="lrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Contenido mínimo del acto administrativo (art. 41 Ley 19.880)</div>
+        <div class="lrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Certificado de presentación firmado (FirmaGob)</div>
+        <div class="lrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Cómputo de plazos + silencio administrativo (feriados y suspensiones)</div>
+        <div class="lrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Trazabilidad hash-chain + sello de tiempo SHOA</div>
+      </div>
+    </section>
+
+    <!-- campos -->
+    <section data-sec="requisitos" class="hide">
+      <div class="eyebrow">Requisitos de postulación</div>
+      <h1 style="font-size:var(--fs-25);margin-bottom:6px">¿Quién puede iniciar este trámite?</h1>
+      <p class="muted" style="margin-bottom:var(--s-5);max-width:70ch">Define las condiciones para postular. Un requisito <b style="color:var(--text-1)">excluyente</b> bloquea el acceso al trámite si el ciudadano no lo cumple; los demás son informativos (se muestran, pero no impiden avanzar).</p>
+      <div id="reqBuilder" class="cn-panel"></div>
+    </section>
+
+    <!-- flujo -->
+    <section data-sec="flujo" class="hide">
+      <div class="eyebrow">Flujo · máquina de estados</div>
+      <h1 style="font-size:var(--fs-25);margin-bottom:6px">Estados y transiciones</h1>
+      <p class="muted" style="margin-bottom:var(--s-4);max-width:70ch">Diseña los estados del trámite y cómo se pasa de uno a otro. Arrastra desde el punto de la derecha de un estado hacia otro para crear una transición. El sistema valida el flujo en vivo y bloquea la publicación si quedaría atascado. La <b style="color:var(--text-1)">doble validación (four-eyes)</b> es una guarda opcional por transición para separar quién revisa de quién resuelve — no es un paso para publicar el tipo de trámite.</p>
+      <div id="flowEditor" class="flow-editor"></div>
+      <p class="tiny dim mt-4">El certificado de estado y la notificación al ciudadano se disparan automáticamente en cada transición (núcleo legal).</p>
+    </section>
+
+    <!-- formulario ciudadano -->
+    <section data-sec="form" class="hide">
+      <div class="row between" style="align-items:flex-start;margin-bottom:var(--s-4);gap:var(--s-4)">
+        <div style="min-width:0">
+          <div class="eyebrow">Formulario ciudadano · por pasos</div>
+          <h1 style="font-size:var(--fs-25);margin-bottom:6px">Lo que el ciudadano completa</h1>
+          <p class="muted" style="max-width:66ch">Arma el trámite como un formulario por pasos. Cada paso puede ser un <b style="color:var(--text-1)">formulario</b>, una carga de <b style="color:var(--text-1)">documentos</b>, un <b style="color:var(--text-1)">pago</b>, una <b style="color:var(--text-1)">firma</b> o una <b style="color:var(--text-1)">página informativa</b>. Arrastra para reordenar. Un paso puede mostrarse solo si se cumple una condición.</p>
+        </div>
+        <button class="btn btn-primary" id="fbPreview" style="flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Vista previa</button>
+      </div>
+      <div id="formBuilder"></div>
+    </section>
+
+    <!-- notif -->
+    <section data-sec="notif" class="hide">
+      <div class="eyebrow">Notificaciones · automáticas</div>
+      <h1 style="font-size:var(--fs-25);margin-bottom:6px">Avisos al ciudadano</h1>
+      <p class="muted" style="margin-bottom:var(--s-5)">Se envían solos en cada evento. Elige los canales por defecto (el ciudadano igual puede ajustar los suyos).</p>
+      <div class="cn-panel">
+        <div class="frow ok"><div style="flex:1"><div class="fn">Ingreso confirmado</div><div class="ft">Email · SMS</div></div><span class="switch on" onclick="this.classList.toggle('on')"></span></div>
+        <div class="frow ok"><div style="flex:1"><div class="fn">Observación / subsanación</div><div class="ft">Email · SMS · Push</div></div><span class="switch on" onclick="this.classList.toggle('on')"></span></div>
+        <div class="frow ok"><div style="flex:1"><div class="fn">Resolución</div><div class="ft">Email · SMS · Push</div></div><span class="switch on" onclick="this.classList.toggle('on')"></span></div>
+        <div class="frow ok"><div style="flex:1"><div class="fn">Silencio por vencer</div><div class="ft">Email · SMS</div></div><span class="switch on" onclick="this.classList.toggle('on')"></span></div>
+        <div class="banner brand mt-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><p style="color:var(--text-2)">Si ningún canal confirma acuse en 48 h, se despacha carta certificada. El funcionario no manda nada a mano.</p></div></div>
+      </div>
+    </section>
+
+    <!-- temporal -->
+    <section data-sec="temporal" class="hide">
+      <div class="eyebrow">Aplicación temporal · decisión 0006</div>
+      <h1 style="font-size:var(--fs-25);margin-bottom:6px">Ante un cambio de ley</h1>
+      <p class="muted" style="margin-bottom:var(--s-5)">Cómo aplica un cambio normativo a los trámites en curso de este tipo. Lo fija el <b style="color:var(--text-1)">equipo legal municipal</b> al versionar, no la configuración libre.</p>
+      <div class="cn-panel stack" style="gap:10px">
+        <label class="frow" style="cursor:pointer"><input type="radio" name="mode" checked style="accent-color:var(--brand)"><div style="flex:1"><div class="fn">Prospectivo <span class="tiny dim">(por defecto)</span></div><div class="ft">Solo afecta a expedientes nuevos. Los en curso siguen con su versión.</div></div></label>
+        <label class="frow pii" style="cursor:pointer"><input type="radio" name="mode" checked style="accent-color:var(--brand)"><div style="flex:1"><div class="fn">Caso a caso <span class="tiny" style="color:var(--warning)">(actual para este tipo)</span></div><div class="ft">El equipo legal decide expediente por expediente, con four-eyes.</div></div></label>
+        <label class="frow" style="cursor:pointer"><input type="radio" name="mode" style="accent-color:var(--brand)"><div style="flex:1"><div class="fn">Retroactivo</div><div class="ft">Los en curso deben re-tramitar para quedar conforme (excepción).</div></div></label>
+      </div>
+    </section>
+
+    <!-- publicar -->
+    <section data-sec="publicar" class="hide">
+      <div class="eyebrow">Publicación · gate</div>
+      <h1 style="font-size:var(--fs-25);margin-bottom:6px">Publicar el tipo de trámite</h1>
+      <p class="muted" style="margin-bottom:var(--s-5)">El sistema verifica que todo esté conforme antes de dejarlo disponible para los ciudadanos.</p>
+      <div class="cn-panel">
+        <div class="card">
+          <div class="gaterow"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><div style="flex:1"><b>Núcleo legal presente</b><div class="tiny dim">IUIe, plazos, certificado, trazabilidad</div></div></div>
+          <div class="gaterow" id="gateFlow"><svg id="gateFlowIc" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><div style="flex:1"><b>Máquina de estados válida</b><div class="tiny dim" id="gateFlowTxt">Flujo sin bloqueantes</div></div><button class="btn btn-secondary btn-sm" id="gateFlowBtn" onclick="show('flujo')" style="display:none">Ir a Flujo</button></div>
+          <div class="gaterow" id="gateForm"><svg id="gateFormIc" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.2"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div style="flex:1"><b>Formulario ciudadano definido</b><div class="tiny dim" id="gateFormTxt">Sin pasos aún</div></div><button class="btn btn-secondary btn-sm" id="gateFormBtn" onclick="show('form')" style="display:none">Ir al formulario</button></div>
+          <div class="gaterow" id="gatePiiRow"><svg id="gatePiiIc" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><div style="flex:1"><b>Datos personales protegidos</b><div class="tiny dim" id="gatePiiTxt">Sin campos con dato personal sin proteger</div></div><button class="btn btn-secondary btn-sm" id="gatePiiBtn" onclick="show('form')" style="display:none">Ir al formulario</button></div>
+          <div class="gaterow" style="border-bottom:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg><div style="flex:1"><b>Modo de aplicación temporal definido</b><div class="tiny dim">Caso a caso</div></div></div>
+        </div>
+        <div class="banner warn mt-4" id="gateBanner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div class="b-body"><b>Publicación bloqueada</b><p>No puedes publicar mientras haya un campo con dato personal sin proteger. El DPO puede autorizar una excepción auditada.</p></div></div>
+        <div class="row mt-4" style="gap:8px"><button class="btn btn-primary" id="pubBtn" disabled onclick="publish()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 8l5-5 5 5M5 21h14"/></svg>Publicar</button><button class="btn btn-secondary" onclick="toast('Solicitud de excepción enviada al DPO')">Válvula del DPO</button></div>
+      </div>
+    </section>
+
+    <div class="cn-bar">
+      <span class="tiny dim" id="cnVersion">Guardado automático · borrador v10</span>
+      <div style="flex:1"></div>
+      <input type="file" id="tplFile" accept="application/json,.json" style="display:none">
+      <button class="btn btn-ghost" id="btnImport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></svg>Importar</button>
+      <button class="btn btn-ghost" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Exportar</button>
+      <button class="btn btn-secondary" id="btnVersions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></svg>Versiones</button>
+      <a class="btn btn-ghost" href="tipos.html">Volver al catálogo</a>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+/* ---------- Navegación del wizard + toast ---------- */
+function toast(m){var t=document.getElementById('toast');var mm=document.getElementById('toastMsg');if(mm)mm.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2600)}
+function show(s){
+  document.querySelectorAll('.cn-sec').forEach(function(b){b.classList.toggle('on',b.dataset.s===s)});
+  document.querySelectorAll('[data-sec]').forEach(function(p){p.classList.toggle('hide',p.dataset.sec!==s)});
+  window.scrollTo({top:0,behavior:'smooth'});
+  // el editor de flujo se mide mal si su sección estuvo oculta (display:none) → re-render al mostrarla
+  if(s==='flujo' && window.fvFlowRerender) setTimeout(window.fvFlowRerender,30);
+  if((s==='form'||s==='requisitos') && window.fvFormRerender) setTimeout(window.fvFormRerender,20);
+}
+document.querySelectorAll('.cn-sec').forEach(function(b){b.onclick=function(){show(b.dataset.s)}});
+
+/* ---------- Gate de publicación: formulario con pasos + PII protegido + máquina de estados sin bloqueantes ---------- */
+function setGateIcon(el,ok){
+  if(!el)return;
+  el.setAttribute('stroke',ok?'var(--success)':'var(--danger)');
+  el.innerHTML=ok?'<path d="M20 6L9 17l-5-5"/>':'<path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>';
+}
+window.fvUpdatePublishGate=function(){
+  var flow=window.fvFlowState?window.fvFlowState():{blockers:0,warnings:0};
+  var form=window.fvFormState?window.fvFormState():{steps:0,fields:0,piiUnprotected:0};
+  var fb=flow.blockers;
+  // fila flujo interno
+  setGateIcon(document.getElementById('gateFlowIc'), fb===0);
+  var ftxt=document.getElementById('gateFlowTxt');
+  if(ftxt) ftxt.textContent = fb===0 ? ('Flujo sin bloqueantes'+(flow.warnings?(' · '+flow.warnings+' advertencia'+(flow.warnings>1?'s':'')):'')) : (fb+' bloqueante'+(fb>1?'s':'')+' en el flujo');
+  var fbtn=document.getElementById('gateFlowBtn'); if(fbtn) fbtn.style.display = fb===0?'none':'';
+  var dotFlujo=document.getElementById('dotFlujo'); if(dotFlujo) dotFlujo.style.background = fb===0?'var(--success)':'var(--danger)';
+  // fila formulario ciudadano
+  var formOk = form.steps>0;
+  setGateIcon(document.getElementById('gateFormIc'), formOk);
+  var frtxt=document.getElementById('gateFormTxt');
+  if(frtxt) frtxt.textContent = formOk ? (form.steps+' paso'+(form.steps>1?'s':'')+' · '+form.fields+' campo'+(form.fields===1?'':'s')) : 'Sin pasos aún';
+  var frbtn=document.getElementById('gateFormBtn'); if(frbtn) frbtn.style.display = formOk?'none':'';
+  var dotForm=document.getElementById('dotForm'); if(dotForm) dotForm.style.background = formOk?'var(--success)':'var(--warning)';
+  // fila datos personales
+  var piiOk = form.piiUnprotected===0;
+  setGateIcon(document.getElementById('gatePiiIc'), piiOk);
+  var ptxt=document.getElementById('gatePiiTxt');
+  if(ptxt) ptxt.textContent = piiOk ? 'Sin datos personales sin proteger' : (form.piiUnprotected+' campo'+(form.piiUnprotected>1?'s':'')+' con dato personal sin proteger');
+  var pbtn=document.getElementById('gatePiiBtn'); if(pbtn) pbtn.style.display = piiOk?'none':'';
+  // botón + banner
+  var ok = fb===0 && formOk && piiOk;
+  var dotPub=document.getElementById('dotPub'); if(dotPub) dotPub.style.background = ok?'var(--success)':'var(--danger)';
+  var pb=document.getElementById('pubBtn'); if(pb) pb.disabled = !ok;
+  var banner=document.getElementById('gateBanner');
+  if(banner){
+    if(ok){
+      banner.className='banner brand mt-4';
+      banner.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div class="b-body"><b>Todo conforme</b><p>Ya puedes publicar este tipo de trámite.</p></div>';
+    } else {
+      banner.className='banner warn mt-4';
+      var r=[];
+      if(fb>0) r.push(fb+' problema'+(fb>1?'s':'')+' en la máquina de estados');
+      if(!formOk) r.push('el formulario ciudadano no tiene pasos');
+      if(!piiOk) r.push('un campo con dato personal sin proteger');
+      banner.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><div class="b-body"><b>Publicación bloqueada</b><p>Falta: '+r.join(' · ')+'.</p></div>';
+    }
+  }
+};
+function publish(){ sessionStorage.setItem('fvPublished','Permiso de edificación'); location.href='tipos.html'; }
+
+/* ============================================================
+   Editor visual de máquina de estados del procedimiento (inline)
+   Diseñador de Procedimientos · capa municipal no-legal.
+   Persistencia: localStorage (schemaVersion). Reapertura idéntica (incl. posiciones).
+   ============================================================ */
+(function () {
+  "use strict";
+  var root = document.getElementById("flowEditor");
+  if (!root) return;
+
+  var SCHEMA = 3;
+  var LSKEY = "fvProcFlow.edificacion.v1";
+  var NODE_W = 156;
+
+  var ROLES_CAT = ["Mesa de partes", "Revisor DOM", "Jefe DOM", "DIDECO", "Rentas y Patentes", "Inspector DOM"];
+  var FIELD_TYPES = ["Texto", "Número", "Fecha", "Sí / No", "Archivo", "Selección"];
+  var DOC_TYPES = ["PDF/A", "PDF", "Imagen", "Planos"];
+
+  var LEGAL_BLOCKS = [
+    { id: "subsanacion", name: "Subsanación (art. 31)", role: "Revisor DOM", note: "Requiere corregir; suspende el plazo." },
+    { id: "recurso", name: "Recurso de reposición (art. 59)", role: "Jefe DOM", note: "Reclamo con plazo propio." },
+    { id: "terceros", name: "Oposición de terceros", role: "Revisor DOM", note: "Parte interesada distinta del solicitante." },
+    { id: "desistimiento", name: "Desistimiento / abandono (arts. 42-43)", role: "Mesa de partes", note: "Cierre sin resolución de fondo." }
+  ];
+
+  var TYPE_META = {
+    inicial: { label: "Inicial", color: "var(--info)" },
+    intermedio: { label: "Intermedio", color: "var(--brand)" },
+    terminal: { label: "Terminal", color: "var(--success)" }
+  };
+
+  function seed() {
+    return {
+      schemaVersion: SCHEMA,
+      states: [
+        { id: "s_ing", name: "Ingreso", type: "inicial", x: 120, y: 20, role: "Mesa de partes", fields: [], docs: [] },
+        { id: "s_adm", name: "Admisibilidad", type: "intermedio", x: 120, y: 125, role: "Revisor DOM", fields: [], docs: [] },
+        { id: "s_rev", name: "Revisión técnica", type: "intermedio", x: 120, y: 230, role: "Revisor DOM",
+          fields: [{ name: "Observaciones técnicas", type: "Texto" }], docs: [] },
+        { id: "s_res", name: "Resolución", type: "terminal", x: 120, y: 335, role: "Jefe DOM", fields: [], docs: [] }
+      ],
+      transitions: [
+        { id: "t1", from: "s_ing", to: "s_adm", role: "Revisor DOM", guards: [] },
+        { id: "t2", from: "s_adm", to: "s_rev", role: "Revisor DOM", guards: [] },
+        { id: "t3", from: "s_rev", to: "s_res", role: "Jefe DOM", guards: ["four-eyes"] }
+      ]
+    };
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(LSKEY);
+      if (!raw) return null;
+      var m = JSON.parse(raw);
+      if (!m || m.schemaVersion !== SCHEMA || !Array.isArray(m.states) || !Array.isArray(m.transitions)) return null;
+      m.states.forEach(function (s) { s.fields = s.fields || []; s.docs = s.docs || []; });
+      return m;
+    } catch (e) { return null; }
+  }
+  var saveT;
+  function save() {
+    clearTimeout(saveT);
+    saveT = setTimeout(function () { localStorage.setItem(LSKEY, JSON.stringify(model)); setSaved(); }, 300);
+  }
+  function setSaved() { var el = document.getElementById("feSaved"); if (el) { el.textContent = "Guardado automático"; el.classList.remove("dirty"); } }
+  function setDirty() { var el = document.getElementById("feSaved"); if (el) { el.textContent = "Guardando…"; el.classList.add("dirty"); } }
+
+  function uid(p) { return p + Math.random().toString(36).slice(2, 8); }
+
+  var model = load() || seed();
+  var sel = null, drag = null, link = null;
+  var elCanvas, elSvg, elInspector, elProblems;
+
+  function byState(id) { return model.states.find(function (s) { return s.id === id; }); }
+  function isLegal(s) { return !!s.legalBlockId; }
+
+  function build() {
+    root.innerHTML =
+      '<div class="fe-toolbar">' +
+        '<div class="fe-add">' +
+          '<button class="btn btn-secondary btn-sm" id="feAddState"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Agregar estado</button>' +
+          '<button class="btn btn-ghost btn-sm" id="feAddLegal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Insertar bloque legal</button>' +
+        '</div>' +
+        '<div class="fe-legend">' +
+          '<span class="fe-lg"><i style="background:var(--info)"></i>Inicial</span>' +
+          '<span class="fe-lg"><i style="background:var(--brand)"></i>Intermedio</span>' +
+          '<span class="fe-lg"><i style="background:var(--success)"></i>Terminal</span>' +
+        '</div>' +
+        '<div class="fe-grow"></div>' +
+        '<span class="tiny dim" id="feSaved">Guardado automático</span>' +
+      '</div>' +
+      '<div class="fe-body">' +
+        '<div class="fe-canvas" id="feCanvas">' +
+          '<svg class="fe-svg" id="feSvg"><defs>' +
+            '<marker id="feArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--border-strong)"/></marker>' +
+            '<marker id="feArrowSel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--brand)"/></marker>' +
+          '</defs></svg>' +
+        '</div>' +
+        '<aside class="fe-inspector" id="feInspector"></aside>' +
+      '</div>' +
+      '<div class="fe-problems" id="feProblems"></div>';
+
+    elCanvas = document.getElementById("feCanvas");
+    elSvg = document.getElementById("feSvg");
+    elInspector = document.getElementById("feInspector");
+    elProblems = document.getElementById("feProblems");
+
+    document.getElementById("feAddState").addEventListener("click", addState);
+    document.getElementById("feAddLegal").addEventListener("click", openLegalMenu);
+    elCanvas.addEventListener("pointerdown", function (e) { if (e.target === elCanvas || e.target === elSvg) select(null); });
+  }
+
+  function addState() {
+    var pos = freeSpot();
+    var s = { id: uid("s_"), name: "Nuevo estado", type: "intermedio", x: pos.x, y: pos.y, role: "", fields: [], docs: [] };
+    model.states.push(s); select({ kind: "state", id: s.id }); render(); save();
+    toast("Estado agregado · defínelo en el panel");
+  }
+  function insertLegalBlock(blockId) {
+    var b = LEGAL_BLOCKS.find(function (x) { return x.id === blockId; });
+    if (!b) return;
+    var pos = freeSpot();
+    var s = { id: uid("s_"), name: b.name, type: "intermedio", x: pos.x, y: pos.y, role: b.role, fields: [], docs: [], legalBlockId: b.id };
+    model.states.push(s); select({ kind: "state", id: s.id }); render(); save();
+    toast("Bloque legal insertado · no editable");
+  }
+  function removeState(id) {
+    model.states = model.states.filter(function (s) { return s.id !== id; });
+    model.transitions = model.transitions.filter(function (t) { return t.from !== id && t.to !== id; });
+    select(null); render(); save();
+  }
+  function addTransition(from, to) {
+    if (from === to) return;
+    if (model.transitions.some(function (t) { return t.from === from && t.to === to; })) { toast("Esa transición ya existe"); return; }
+    var t = { id: uid("t_"), from: from, to: to, role: "", guards: [] };
+    model.transitions.push(t); select({ kind: "transition", id: t.id }); render(); save();
+  }
+  function removeTransition(id) { model.transitions = model.transitions.filter(function (t) { return t.id !== id; }); select(null); render(); save(); }
+  function freeSpot() {
+    for (var row = 0; row < 6; row++) for (var col = 0; col < 4; col++) {
+      var x = 24 + col * 210, y = 40 + row * 132;
+      var taken = model.states.some(function (s) { return Math.abs(s.x - x) < 120 && Math.abs(s.y - y) < 90; });
+      if (!taken) return { x: x, y: y };
+    }
+    return { x: 24 + Math.random() * 300, y: 40 + Math.random() * 200 };
+  }
+
+  function select(s) { sel = s; render(); }
+  function render() { renderNodes(); renderEdges(); renderInspector(); validate(); }
+
+  function renderNodes() {
+    Array.prototype.slice.call(elCanvas.querySelectorAll(".fe-node")).forEach(function (n) { n.remove(); });
+    var maxX = 0, maxY = 0;
+    model.states.forEach(function (s) {
+      var meta = TYPE_META[s.type] || TYPE_META.intermedio;
+      var node = document.createElement("div");
+      node.className = "fe-node" + (sel && sel.kind === "state" && sel.id === s.id ? " sel" : "") + (isLegal(s) ? " legal" : "");
+      node.style.left = s.x + "px"; node.style.top = s.y + "px";
+      node.dataset.id = s.id; node.style.setProperty("--nc", meta.color);
+      var badges = isLegal(s) ? '<span class="fe-lock" title="Bloque legal · no editable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span>' : "";
+      node.innerHTML =
+        '<div class="fe-node-h"><span class="fe-type">' + meta.label + "</span>" + badges + "</div>" +
+        '<div class="fe-node-t">' + escapeHtml(s.name || "Sin nombre") + "</div>" +
+        '<div class="fe-node-r">' + (s.role ? escapeHtml(s.role) : '<span class="fe-warn-txt">Sin responsable</span>') + "</div>" +
+        '<div class="fe-out" title="Arrastra para crear una transición"></div>';
+      elCanvas.appendChild(node);
+      maxX = Math.max(maxX, s.x + NODE_W); maxY = Math.max(maxY, s.y + node.offsetHeight);
+
+      node.addEventListener("pointerdown", function (e) {
+        if (e.target.classList.contains("fe-out")) return;
+        e.stopPropagation(); select({ kind: "state", id: s.id });
+        var rect = elCanvas.getBoundingClientRect();
+        drag = { id: s.id, offX: e.clientX - rect.left + elCanvas.scrollLeft - s.x, offY: e.clientY - rect.top + elCanvas.scrollTop - s.y };
+        node.setPointerCapture(e.pointerId);
+      });
+      node.addEventListener("pointermove", function (e) {
+        if (!drag || drag.id !== s.id) return;
+        var rect = elCanvas.getBoundingClientRect();
+        s.x = Math.max(0, Math.round(e.clientX - rect.left + elCanvas.scrollLeft - drag.offX));
+        s.y = Math.max(0, Math.round(e.clientY - rect.top + elCanvas.scrollTop - drag.offY));
+        node.style.left = s.x + "px"; node.style.top = s.y + "px"; renderEdges(); setDirty();
+      });
+      node.addEventListener("pointerup", function () { if (drag && drag.id === s.id) { drag = null; save(); } });
+
+      node.querySelector(".fe-out").addEventListener("pointerdown", function (e) {
+        e.stopPropagation(); link = { from: s.id, x2: 0, y2: 0 };
+        elCanvas.setPointerCapture(e.pointerId); moveLink(e);
+      });
+    });
+    elCanvas.style.setProperty("--world-w", Math.max(elCanvas.clientWidth, maxX + 40) + "px");
+    elCanvas.style.setProperty("--world-h", Math.max(360, maxY + 40) + "px");
+  }
+
+  function moveLink(e) {
+    if (!link) return;
+    var rect = elCanvas.getBoundingClientRect();
+    link.x2 = e.clientX - rect.left + elCanvas.scrollLeft;
+    link.y2 = e.clientY - rect.top + elCanvas.scrollTop;
+    renderEdges();
+  }
+  document.addEventListener("pointermove", function (e) { if (link) moveLink(e); });
+  document.addEventListener("pointerup", function (e) {
+    if (!link) return;
+    var target = document.elementFromPoint(e.clientX, e.clientY);
+    var node = target && target.closest ? target.closest(".fe-node") : null;
+    if (node && node.dataset.id && node.dataset.id !== link.from) addTransition(link.from, node.dataset.id);
+    link = null; renderEdges();
+  });
+
+  function nodeGeom(id) {
+    var el = elCanvas.querySelector('.fe-node[data-id="' + id + '"]'); var s = byState(id);
+    if (!el || !s) return null;
+    return { x: s.x, y: s.y, w: el.offsetWidth, h: el.offsetHeight };
+  }
+
+  function renderEdges() {
+    var w = elCanvas.scrollWidth, h = elCanvas.scrollHeight;
+    elSvg.setAttribute("width", w); elSvg.setAttribute("height", h);
+    elSvg.style.width = w + "px"; elSvg.style.height = h + "px";
+    Array.prototype.slice.call(elSvg.querySelectorAll(".fe-edge, .fe-edge-hit, .fe-linkline, .fe-edge-lbl")).forEach(function (p) { p.remove(); });
+    model.transitions.forEach(function (t) {
+      var a = nodeGeom(t.from), b = nodeGeom(t.to); if (!a || !b) return;
+      var p = edgePath(a, b), isSel = sel && sel.kind === "transition" && sel.id === t.id;
+      var hit = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      hit.setAttribute("d", p); hit.setAttribute("class", "fe-edge-hit");
+      hit.addEventListener("pointerdown", function (e) { e.stopPropagation(); select({ kind: "transition", id: t.id }); });
+      elSvg.appendChild(hit);
+      var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", p); path.setAttribute("class", "fe-edge" + (isSel ? " sel" : ""));
+      path.setAttribute("marker-end", isSel ? "url(#feArrowSel)" : "url(#feArrow)");
+      elSvg.appendChild(path);
+      if (t.guards && t.guards.indexOf("four-eyes") >= 0) {
+        var mid = midPoint(a, b);
+        var lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", mid.x); lbl.setAttribute("y", mid.y - 4); lbl.setAttribute("class", "fe-edge-lbl"); lbl.textContent = "four-eyes";
+        elSvg.appendChild(lbl);
+      }
+    });
+    if (link) {
+      var g = nodeGeom(link.from);
+      if (g) {
+        var line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        var x1 = g.x + g.w, y1 = g.y + g.h / 2;
+        line.setAttribute("d", "M" + x1 + " " + y1 + " L" + link.x2 + " " + link.y2);
+        line.setAttribute("class", "fe-linkline"); line.setAttribute("marker-end", "url(#feArrowSel)");
+        elSvg.appendChild(line);
+      }
+    }
+  }
+  function edgePath(a, b) {
+    // destino claramente a la derecha → salir por la derecha, bezier horizontal
+    if (b.x > a.x + a.w - 24) {
+      var x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x, y2 = b.y + b.h / 2;
+      var dx = Math.max(30, Math.abs(x2 - x1) / 2);
+      return "M" + x1 + " " + y1 + " C" + (x1 + dx) + " " + y1 + " " + (x2 - dx) + " " + y2 + " " + x2 + " " + y2;
+    }
+    // destino a la izquierda o debajo (misma columna) → salir por abajo, entrar por arriba
+    var sx = a.x + a.w / 2, sy = a.y + a.h, ex = b.x + b.w / 2, ey = b.y;
+    var my = (sy + ey) / 2;
+    return "M" + sx + " " + sy + " C" + sx + " " + my + " " + ex + " " + my + " " + ex + " " + ey;
+  }
+  function midPoint(a, b) { return { x: (a.x + a.w + b.x) / 2, y: (a.y + a.h / 2 + b.y + b.h / 2) / 2 }; }
+
+  function renderInspector() {
+    if (!sel) {
+      elInspector.innerHTML =
+        '<div class="fe-insp-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6M12 3v6M5 21h14a2 2 0 002-2v-7H3v7a2 2 0 002 2z"/></svg>' +
+        "<p>Selecciona un <b>estado</b> o una <b>transición</b> para editar sus propiedades. Arrastra desde el punto derecho de un estado para conectarlo con otro.</p></div>";
+      return;
+    }
+    if (sel.kind === "state") renderStateInspector(byState(sel.id));
+    else renderTransitionInspector(model.transitions.find(function (t) { return t.id === sel.id; }));
+  }
+
+  function renderStateInspector(s) {
+    if (!s) { select(null); return; }
+    var legal = isLegal(s);
+    var html = '<div class="fe-insp-head"><span class="fe-insp-eye">Estado</span>' + (legal ? '<span class="badge brand"><span class="g"></span>Bloque legal</span>' : "") + "</div>";
+    if (legal) {
+      html += '<div class="banner brand" style="margin-bottom:var(--s-3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><div class="b-body"><b>' + escapeHtml(s.name) + "</b><p>Mantenido por Lemon (Ley 19.880). No se edita desde aquí — así ningún trámite incumple.</p></div></div>";
+      html += '<div class="fe-field"><label>Responsable</label><div class="fe-ro">' + escapeHtml(s.role) + "</div></div>";
+      html += '<button class="btn btn-danger btn-sm block" data-act="delState"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Quitar del flujo</button>';
+      elInspector.innerHTML = html; wireInspector(s); return;
+    }
+    var nameErr = !s.name || !s.name.trim(), roleErr = !s.role;
+    html +=
+      '<div class="fe-field' + (nameErr ? " err" : "") + '"><label>Nombre del estado</label><input class="input" id="fiName" value="' + escapeAttr(s.name) + '" placeholder="Ej: Revisión técnica">' + (nameErr ? '<span class="fe-msg">Ponle un nombre al estado.</span>' : "") + "</div>" +
+      '<div class="fe-field"><label>Tipo</label><div class="fe-seg" id="fiType">' + seg("inicial", s.type) + seg("intermedio", s.type) + seg("terminal", s.type) + "</div></div>" +
+      '<div class="fe-field' + (roleErr ? " err" : "") + '"><label>Responsable</label><select class="input" id="fiRole"><option value="">— Elige un rol —</option>' +
+        ROLES_CAT.map(function (r) { return '<option' + (r === s.role ? " selected" : "") + ">" + r + "</option>"; }).join("") + "</select>" + (roleErr ? '<span class="fe-msg">Asigna quién actúa en este estado.</span>' : "") + "</div>";
+    html += '<div class="fe-sub">Campos requeridos</div><div id="fiFields">';
+    s.fields.forEach(function (f, i) {
+      var fErr = !f.name || !f.name.trim() || !f.type;
+      html += '<div class="fe-req' + (fErr ? " err" : "") + '" data-i="' + i + '"><input class="input input-sm" data-f="name" value="' + escapeAttr(f.name) + '" placeholder="Nombre del campo"><select class="input input-sm" data-f="type"><option value="">Tipo…</option>' + FIELD_TYPES.map(function (t) { return '<option' + (t === f.type ? " selected" : "") + ">" + t + "</option>"; }).join("") + '</select><button class="fe-x" data-del="' + i + '" title="Quitar campo">✕</button></div>';
+    });
+    html += '</div><button class="btn btn-ghost btn-sm" id="fiAddField"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Agregar campo</button>';
+    html += '<div class="fe-sub">Documentos requeridos</div><div id="fiDocs">';
+    s.docs.forEach(function (d, i) {
+      var dErr = !d.name || !d.name.trim() || !d.type;
+      html += '<div class="fe-req' + (dErr ? " err" : "") + '" data-i="' + i + '"><input class="input input-sm" data-d="name" value="' + escapeAttr(d.name) + '" placeholder="Nombre del documento"><select class="input input-sm" data-d="type"><option value="">Formato…</option>' + DOC_TYPES.map(function (t) { return '<option' + (t === d.type ? " selected" : "") + ">" + t + "</option>"; }).join("") + '</select><button class="fe-x" data-deld="' + i + '" title="Quitar documento">✕</button></div>';
+    });
+    html += '</div><button class="btn btn-ghost btn-sm" id="fiAddDoc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Agregar documento</button>';
+    html += '<div class="sep"></div><button class="btn btn-danger btn-sm block" data-act="delState"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Eliminar estado</button>';
+    elInspector.innerHTML = html; wireInspector(s);
+  }
+  function seg(type, cur) { var m = TYPE_META[type]; return '<button data-type="' + type + '" class="' + (type === cur ? "on" : "") + '"><i style="background:' + m.color + '"></i>' + m.label + "</button>"; }
+
+  function wireInspector(s) {
+    var del = elInspector.querySelector('[data-act="delState"]');
+    if (del) del.addEventListener("click", function () { removeState(s.id); });
+    if (isLegal(s)) return;
+    var name = document.getElementById("fiName");
+    if (name) name.addEventListener("input", function () { s.name = name.value; renderNodes(); renderEdges(); validate(); save(); });
+    var typeSeg = document.getElementById("fiType");
+    if (typeSeg) typeSeg.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { s.type = b.dataset.type; render(); save(); }); });
+    var role = document.getElementById("fiRole");
+    if (role) role.addEventListener("change", function () { s.role = role.value; renderNodes(); validate(); save(); });
+    var addF = document.getElementById("fiAddField");
+    if (addF) addF.addEventListener("click", function () { s.fields.push({ name: "", type: "" }); renderInspector(); validate(); save(); });
+    var fWrap = document.getElementById("fiFields");
+    if (fWrap) fWrap.querySelectorAll(".fe-req").forEach(function (row) {
+      var i = +row.dataset.i;
+      row.querySelector('[data-f="name"]').addEventListener("input", function (e) { s.fields[i].name = e.target.value; row.classList.toggle("err", !e.target.value.trim() || !s.fields[i].type); validate(); save(); });
+      row.querySelector('[data-f="type"]').addEventListener("change", function (e) { s.fields[i].type = e.target.value; row.classList.toggle("err", !s.fields[i].name.trim() || !e.target.value); validate(); save(); });
+      row.querySelector("[data-del]").addEventListener("click", function () { s.fields.splice(i, 1); renderInspector(); validate(); save(); });
+    });
+    var addD = document.getElementById("fiAddDoc");
+    if (addD) addD.addEventListener("click", function () { s.docs.push({ name: "", type: "" }); renderInspector(); validate(); save(); });
+    var dWrap = document.getElementById("fiDocs");
+    if (dWrap) dWrap.querySelectorAll(".fe-req").forEach(function (row) {
+      var i = +row.dataset.i;
+      row.querySelector('[data-d="name"]').addEventListener("input", function (e) { s.docs[i].name = e.target.value; row.classList.toggle("err", !e.target.value.trim() || !s.docs[i].type); validate(); save(); });
+      row.querySelector('[data-d="type"]').addEventListener("change", function (e) { s.docs[i].type = e.target.value; row.classList.toggle("err", !s.docs[i].name.trim() || !e.target.value); validate(); save(); });
+      row.querySelector("[data-deld]").addEventListener("click", function () { s.docs.splice(i, 1); renderInspector(); validate(); save(); });
+    });
+  }
+
+  function renderTransitionInspector(t) {
+    if (!t) { select(null); return; }
+    var from = byState(t.from), to = byState(t.to), roleErr = !t.role;
+    var fourEyes = t.guards.indexOf("four-eyes") >= 0, signedDoc = t.guards.indexOf("doc-firmado") >= 0;
+    elInspector.innerHTML =
+      '<div class="fe-insp-head"><span class="fe-insp-eye">Transición</span></div>' +
+      '<div class="fe-flowline"><span class="chip">' + escapeHtml(from ? from.name : "?") + '</span><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" style="width:16px;height:16px"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="chip">' + escapeHtml(to ? to.name : "?") + "</span></div>" +
+      '<div class="fe-field' + (roleErr ? " err" : "") + '"><label>Quién la ejecuta</label><select class="input" id="tiRole"><option value="">— Elige un rol —</option>' +
+        ROLES_CAT.map(function (r) { return '<option' + (r === t.role ? " selected" : "") + ">" + r + "</option>"; }).join("") + "</select>" + (roleErr ? '<span class="fe-msg">Asigna quién puede ejecutar esta transición.</span>' : "") + "</div>" +
+      '<div class="fe-sub">Guardas</div>' +
+      '<label class="fe-check"><input type="checkbox" id="tiFour"' + (fourEyes ? " checked" : "") + '><div><b>Doble validación (four-eyes)</b><p>Un segundo aprobador distinto del que revisó. Separación de funciones al resolver.</p></div></label>' +
+      '<label class="fe-check"><input type="checkbox" id="tiDoc"' + (signedDoc ? " checked" : "") + '><div><b>Requiere documento firmado</b><p>La transición exige un adjunto con firma electrónica.</p></div></label>' +
+      '<div class="sep"></div><button class="btn btn-danger btn-sm block" data-act="delTr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>Eliminar transición</button>';
+    document.getElementById("tiRole").addEventListener("change", function (e) { t.role = e.target.value; validate(); save(); });
+    document.getElementById("tiFour").addEventListener("change", function (e) { setGuard(t, "four-eyes", e.target.checked); renderEdges(); save(); });
+    document.getElementById("tiDoc").addEventListener("change", function (e) { setGuard(t, "doc-firmado", e.target.checked); save(); });
+    elInspector.querySelector('[data-act="delTr"]').addEventListener("click", function () { removeTransition(t.id); });
+  }
+  function setGuard(t, g, on) { var i = t.guards.indexOf(g); if (on && i < 0) t.guards.push(g); if (!on && i >= 0) t.guards.splice(i, 1); }
+
+  function validate() {
+    var problems = [], states = model.states, trans = model.transitions;
+    var inicial = states.filter(function (s) { return s.type === "inicial"; });
+    var terminal = states.filter(function (s) { return s.type === "terminal"; });
+    if (inicial.length === 0) problems.push({ level: "error", msg: "Falta un estado inicial. Todo procedimiento arranca en exactamente uno." });
+    if (inicial.length > 1) problems.push({ level: "error", msg: "Hay " + inicial.length + " estados iniciales. Debe haber exactamente uno.", target: { kind: "state", id: inicial[1].id } });
+    if (terminal.length === 0) problems.push({ level: "error", msg: "Falta al menos un estado terminal (donde el trámite cierra)." });
+    trans.forEach(function (t) {
+      if (!byState(t.from) || !byState(t.to)) problems.push({ level: "error", msg: "Transición con un extremo inexistente (conexión rota).", target: { kind: "transition", id: t.id } });
+      if (!t.role) problems.push({ level: "error", msg: "Una transición no tiene responsable asignado.", target: { kind: "transition", id: t.id } });
+    });
+    if (inicial.length === 1) {
+      var reach = {}; reach[inicial[0].id] = true; var queue = [inicial[0].id];
+      while (queue.length) { var cur = queue.shift(); trans.filter(function (t) { return t.from === cur; }).forEach(function (t) { if (!reach[t.to]) { reach[t.to] = true; queue.push(t.to); } }); }
+      states.forEach(function (s) { if (!reach[s.id]) problems.push({ level: "error", msg: "El estado «" + (s.name || "sin nombre") + "» es inalcanzable desde el inicio.", target: { kind: "state", id: s.id } }); });
+    }
+    states.forEach(function (s) {
+      if (s.type !== "terminal" && !trans.some(function (t) { return t.from === s.id; }))
+        problems.push({ level: "error", msg: "El estado «" + (s.name || "sin nombre") + "» no tiene salida y no es terminal (el trámite quedaría atascado).", target: { kind: "state", id: s.id } });
+    });
+    states.forEach(function (s) {
+      if (isLegal(s)) return;
+      if (!s.name || !s.name.trim()) problems.push({ level: "error", msg: "Un estado no tiene nombre.", target: { kind: "state", id: s.id } });
+      if (!s.role) problems.push({ level: "error", msg: "El estado «" + (s.name || "sin nombre") + "» no tiene responsable.", target: { kind: "state", id: s.id } });
+      s.fields.forEach(function (f) { if (!f.name || !f.name.trim() || !f.type) problems.push({ level: "error", msg: "Un campo requerido en «" + (s.name || "sin nombre") + "» está incompleto (nombre y tipo).", target: { kind: "state", id: s.id } }); });
+      s.docs.forEach(function (d) { if (!d.name || !d.name.trim() || !d.type) problems.push({ level: "error", msg: "Un documento requerido en «" + (s.name || "sin nombre") + "» está incompleto (nombre y formato).", target: { kind: "state", id: s.id } }); });
+    });
+    if (hasCycle(states, trans)) problems.push({ level: "warn", msg: "El flujo tiene un ciclo (un estado puede volver a uno anterior). Puede ser una devolución legítima (subsanación, art. 31); verifica que sea intencional." });
+    renderProblems(problems);
+    var blockers = problems.filter(function (p) { return p.level === "error"; }).length;
+    window.__flowBlockers = blockers; window.__flowWarnings = problems.length - blockers;
+    if (window.fvUpdatePublishGate) window.fvUpdatePublishGate();
+    return { blockers: blockers, warnings: problems.length - blockers };
+  }
+  function hasCycle(states, trans) {
+    var color = {}, adj = {};
+    states.forEach(function (s) { adj[s.id] = []; color[s.id] = 0; });
+    trans.forEach(function (t) { if (adj[t.from]) adj[t.from].push(t.to); });
+    var cyc = false;
+    function dfs(u) { color[u] = 1; adj[u].forEach(function (v) { if (color[v] === 1) cyc = true; else if (color[v] === 0) dfs(v); }); color[u] = 2; }
+    states.forEach(function (s) { if (color[s.id] === 0) dfs(s.id); });
+    return cyc;
+  }
+  function renderProblems(problems) {
+    if (!problems.length) { elProblems.innerHTML = '<div class="fe-prob-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Máquina de estados válida · lista para publicar</div>'; return; }
+    var errs = problems.filter(function (p) { return p.level === "error"; }), warns = problems.filter(function (p) { return p.level === "warn"; });
+    var head = '<div class="fe-prob-head">' + (errs.length ? '<span class="fe-prob-count err">' + errs.length + " bloqueante" + (errs.length > 1 ? "s" : "") + "</span>" : "") + (warns.length ? '<span class="fe-prob-count warn">' + warns.length + " advertencia" + (warns.length > 1 ? "s" : "") + "</span>" : "") + "</div>";
+    var list = problems.map(function (p, i) {
+      var ic = p.level === "error"
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><path d="M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+      return '<button class="fe-prob' + (p.target ? " nav" : "") + '" data-i="' + i + '">' + ic + "<span>" + escapeHtml(p.msg) + "</span></button>";
+    }).join("");
+    elProblems.innerHTML = head + '<div class="fe-prob-list">' + list + "</div>";
+    elProblems.querySelectorAll(".fe-prob").forEach(function (b) {
+      var p = problems[+b.dataset.i];
+      if (p.target) b.addEventListener("click", function () {
+        select(p.target);
+        var el = elCanvas.querySelector('.fe-node[data-id="' + p.target.id + '"]'); if (el) el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+      });
+    });
+  }
+
+  function openLegalMenu() {
+    var m = document.getElementById("feLegalMenu");
+    if (m) { m.remove(); return; }
+    var btn = document.getElementById("feAddLegal");
+    var menu = document.createElement("div"); menu.id = "feLegalMenu"; menu.className = "fe-menu";
+    menu.innerHTML = '<div class="fe-menu-hd">Bloques legales · Ley 19.880</div>' + LEGAL_BLOCKS.map(function (b) { return '<button data-b="' + b.id + '"><b>' + b.name + "</b><span>" + b.note + "</span></button>"; }).join("");
+    root.appendChild(menu);
+    var r = btn.getBoundingClientRect(), rr = root.getBoundingClientRect();
+    menu.style.top = (r.bottom - rr.top + 6) + "px"; menu.style.left = (r.left - rr.left) + "px";
+    menu.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { insertLegalBlock(b.dataset.b); menu.remove(); }); });
+    setTimeout(function () { document.addEventListener("pointerdown", function close(e) { if (!menu.contains(e.target) && e.target !== btn) { menu.remove(); document.removeEventListener("pointerdown", close); } }); }, 0);
+  }
+
+  function escapeHtml(s) { return String(s == null ? "" : s).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function escapeAttr(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  window.fvFlowState = function () { return { blockers: window.__flowBlockers || 0, warnings: window.__flowWarnings || 0 }; };
+  window.fvFlowRerender = function () { renderNodes(); renderEdges(); };
+  window.fvFlowReset = function () { localStorage.removeItem(LSKEY); model = seed(); select(null); render(); save(); };
+  window.fvFlowModel = function () { return model; };
+  window.fvFlowReload = function () { model = load() || seed(); select(null); render(); save(); };
+
+  build(); render();
+  window.addEventListener("resize", function () { renderNodes(); renderEdges(); });
+  setTimeout(function () { renderNodes(); renderEdges(); }, 60);
+})();
+
+/* ============================================================
+   Formulario ciudadano — constructor multi-paso (inline)
+   Requisitos (con excluyentes) + pasos tipados + campos drag-reorder +
+   condicionales de visibilidad por paso + vista previa ejecutable.
+   ============================================================ */
+(function () {
+  "use strict";
+  var root = document.getElementById("formBuilder");
+  var reqRoot = document.getElementById("reqBuilder");
+  if (!root || !reqRoot) return;
+
+  var SCHEMA = 2;
+  var LSKEY = "fvCitizenForm.edificacion.v1";
+  var PII_RE = /nombre|apellido|rut|c[eé]dula|direcci|domicilio|correo|email|tel[eé]fono|celular|fono|salud|enfermedad|discapacidad|nacimiento/i;
+  // Origen del dato (principio once-only, Ley 21.180): "Ciudadano" = lo aporta; el resto lo trae el Estado por interoperabilidad (Red de Interoperabilidad / ex-PISEE)
+  var ORIGENES = ["Ciudadano", "ClaveÚnica", "Registro Civil", "SII", "Registro Social de Hogares", "Interno municipal", "Tesorería General"];
+
+  var FIELD_TYPES = [
+    { t: "texto", l: "Texto" }, { t: "parrafo", l: "Texto largo" }, { t: "numero", l: "Número" },
+    { t: "select", l: "Selección" }, { t: "fecha", l: "Fecha" }, { t: "checkbox", l: "Casilla (sí/no)" }, { t: "upload", l: "Subir archivo" }
+  ];
+  var STEP_TYPES = [
+    { t: "formulario", l: "Formulario", d: "Campos que el ciudadano completa", ic: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>' },
+    { t: "documentos", l: "Documentos", d: "Archivos que debe adjuntar", ic: '<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/>' },
+    { t: "pago", l: "Pago", d: "Cobro de derechos municipales", ic: '<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20M6 15h4"/>' },
+    { t: "firma", l: "Firma", d: "Firma electrónica de la solicitud", ic: '<path d="M3 17c3-1 5-9 8-9s2 6 4 6 3-3 5-3"/><path d="M3 21h18"/>' },
+    { t: "info", l: "Información", d: "Texto que el ciudadano lee", ic: '<circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v4h1"/>' }
+  ];
+  var DOC_FORMATS = ["PDF/A", "PDF", "Imagen (JPG/PNG)", "Cualquiera"];
+
+  function uid(p) { return p + Math.random().toString(36).slice(2, 7); }
+  function detectPii(label) { return PII_RE.test(label || ""); }
+  function esSistema(origen) { return !!origen && origen !== "Ciudadano"; }
+  function demoValue(c) {
+    var l = (c.label || "").toLowerCase();
+    if (/nombre/.test(l)) return "María González";
+    if (/rut|c[eé]dula/.test(l)) return "12.345.678-9";
+    if (/estado civil/.test(l)) return "Casado/a";
+    if (/direcci|domicilio/.test(l)) return "Av. Los Presidentes 1234, Ñuñoa";
+    if (/comuna/.test(l)) return "Ñuñoa";
+    if (/fecha|nacimiento/.test(l)) return "1988-05-12";
+    if (/aval[uú]o|rol/.test(l)) return "1234-56";
+    return "(traído del Estado)";
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+  function escA(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function toast(m) { var t = document.getElementById("toast"); var mm = document.getElementById("toastMsg"); if (mm) mm.textContent = m; t.classList.add("show"); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove("show"); }, 2400); }
+  function stepMeta(t) { return STEP_TYPES.find(function (x) { return x.t === t; }) || STEP_TYPES[0]; }
+  function origenSelectHtml(origen, attr) {
+    return '<select class="fb-mini fb-origen' + (esSistema(origen) ? " sys" : "") + '" data-' + attr + '="origen" title="¿De dónde sale este dato? Si lo tiene el Estado, no se le pide al ciudadano (Ley 21.180)">' +
+      ORIGENES.map(function (o) { var lbl = o === "Ciudadano" ? "Lo aporta el ciudadano" : "Lo trae: " + o; return '<option value="' + escA(o) + '"' + (o === origen ? " selected" : "") + ">" + esc(lbl) + "</option>"; }).join("") +
+    "</select>";
+  }
+
+  function seed() {
+    return {
+      schemaVersion: SCHEMA,
+      requisitos: [
+        { id: uid("r"), label: "Ser el propietario del predio o su representante legal", excluyente: true, origen: "SII" },
+        { id: uid("r"), label: "El predio está ubicado en la comuna", excluyente: true, origen: "SII" },
+        { id: uid("r"), label: "Sin deudas de aseo domiciliario pendientes", excluyente: false, origen: "Interno municipal" }
+      ],
+      pasos: [
+        { id: uid("p"), nombre: "Identificación", tipo: "formulario", condicion: null, campos: [
+          { id: uid("c"), tipo: "texto", label: "Nombre del propietario", requerido: true, opciones: [], descripcion: "", pii: true, protegido: false, origen: "ClaveÚnica" },
+          { id: uid("c"), tipo: "texto", label: "RUT", requerido: true, opciones: [], descripcion: "Formato 12.345.678-9", pii: true, protegido: false, origen: "ClaveÚnica" },
+          { id: uid("c"), tipo: "select", label: "Estado civil", requerido: true, opciones: ["Soltero/a", "Casado/a", "Otro"], descripcion: "", pii: false, protegido: false, origen: "Registro Civil" },
+          { id: uid("c"), tipo: "texto", label: "Dirección del predio", requerido: true, opciones: [], descripcion: "", pii: false, protegido: false, origen: "Ciudadano" }
+        ] },
+        { id: uid("p"), nombre: "Datos de la obra", tipo: "formulario", condicion: null, campos: [
+          { id: uid("c"), tipo: "numero", label: "Superficie a edificar (m²)", requerido: true, opciones: [], descripcion: "", pii: false, protegido: false, origen: "Ciudadano" },
+          { id: uid("c"), tipo: "select", label: "Tipo de obra", requerido: true, opciones: ["Obra nueva", "Ampliación", "Modificación"], descripcion: "", pii: false, protegido: false, origen: "Ciudadano" }
+        ] },
+        { id: uid("p"), nombre: "Certificado de matrimonio", tipo: "documentos", condicion: { campo: "Estado civil", valor: "Casado/a" }, documentos: [
+          { id: uid("d"), nombre: "Certificado de matrimonio", formato: "PDF", tamMax: "5 MB", descripcion: "Emitido por el Registro Civil", origen: "Registro Civil" }
+        ] },
+        { id: uid("p"), nombre: "Documentos de la obra", tipo: "documentos", condicion: null, documentos: [
+          { id: uid("d"), nombre: "Planos de arquitectura", formato: "PDF/A", tamMax: "20 MB", descripcion: "Firmados por el arquitecto responsable", origen: "Ciudadano", obligatorio: true },
+          { id: uid("d"), nombre: "Certificado de dominio vigente", formato: "PDF", tamMax: "5 MB", descripcion: "Emitido por el Conservador de Bienes Raíces", origen: "Ciudadano", obligatorio: true }
+        ] },
+        { id: uid("p"), nombre: "Pago de derechos", tipo: "pago", condicion: null, monto: "1% del presupuesto de la obra", descripcion: "" },
+        { id: uid("p"), nombre: "Firma de la solicitud", tipo: "firma", condicion: null, proveedor: "FirmaGob (ClaveÚnica)" }
+      ]
+    };
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(LSKEY); if (!raw) return null;
+      var m = JSON.parse(raw);
+      if (!m || m.schemaVersion !== SCHEMA || !Array.isArray(m.pasos) || !Array.isArray(m.requisitos)) return null;
+      return m;
+    } catch (e) { return null; }
+  }
+  var saveT; function save() { clearTimeout(saveT); saveT = setTimeout(function () { localStorage.setItem(LSKEY, JSON.stringify(model)); }, 250); }
+  var model = load() || seed();
+  // recomputa deteccion PII + saneo de origen al hidratar (el esquema puede evolucionar)
+  model.pasos.forEach(function (p) {
+    if (p.campos) p.campos.forEach(function (c) { c.pii = detectPii(c.label); if (!c.pii) c.protegido = false; if (!c.origen) c.origen = "Ciudadano"; });
+    if (p.documentos) p.documentos.forEach(function (d) { if (!d.origen) d.origen = "Ciudadano"; });
+  });
+  model.requisitos.forEach(function (r) { if (!r.origen) r.origen = "Ciudadano"; });
+
+  window.fvFormState = function () {
+    var fields = 0, piiUn = 0;
+    model.pasos.forEach(function (p) { if (p.campos) { fields += p.campos.length; p.campos.forEach(function (c) { if (c.pii && !c.protegido) piiUn++; }); } });
+    return { steps: model.pasos.length, fields: fields, piiUnprotected: piiUn };
+  };
+  function commit() { save(); render(); if (window.fvUpdatePublishGate) window.fvUpdatePublishGate(); }
+
+  /* ---------- helpers de condición ---------- */
+  function fieldNamesBefore(stepIdx) {
+    var names = [];
+    model.pasos.slice(0, stepIdx).forEach(function (p) { if (p.campos) p.campos.forEach(function (c) { if (c.label) names.push(c.label); }); });
+    return names;
+  }
+  function valuesFor(label) {
+    for (var i = 0; i < model.pasos.length; i++) { var p = model.pasos[i]; if (p.campos) for (var j = 0; j < p.campos.length; j++) if (p.campos[j].label === label) return p.campos[j].opciones || []; }
+    return [];
+  }
+  function stepVisible(p, answers) { if (!p.condicion) return true; return (answers[p.condicion.campo] || "") === p.condicion.valor; }
+
+  /* ============ REQUISITOS ============ */
+  function renderReq() {
+    var h = "";
+    if (!model.requisitos.length) h += '<div class="fb-empty">Aún no hay requisitos. Agrega el primero para restringir quién puede postular.</div>';
+    model.requisitos.forEach(function (r, i) {
+      h += '<div class="fb-req' + (r.excluyente ? " exc" : "") + '" data-i="' + i + '">' +
+        '<svg class="fb-req-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + (r.excluyente ? '<path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>' : '<circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v4h1"/>') + "</svg>" +
+        '<input class="fb-inl" data-r="label" value="' + escA(r.label) + '" placeholder="Describe el requisito">' +
+        origenSelectHtml(r.origen, "r") +
+        '<label class="fb-toggle" title="Si es excluyente, bloquea el trámite cuando no se cumple"><input type="checkbox" data-r="exc"' + (r.excluyente ? " checked" : "") + ">Excluyente</label>" +
+        '<button class="fe-x" data-r="del" title="Quitar">✕</button>' +
+      "</div>";
+    });
+    h += '<button class="btn btn-secondary mt-4" id="reqAdd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Agregar requisito</button>';
+    reqRoot.innerHTML = h;
+    reqRoot.querySelectorAll(".fb-req").forEach(function (row) {
+      var i = +row.dataset.i;
+      row.querySelector('[data-r="label"]').addEventListener("input", function (e) { model.requisitos[i].label = e.target.value; save(); });
+      row.querySelector('[data-r="exc"]').addEventListener("change", function (e) { model.requisitos[i].excluyente = e.target.checked; save(); renderReq(); });
+      row.querySelector('[data-r="origen"]').addEventListener("change", function (e) { model.requisitos[i].origen = e.target.value; save(); renderReq(); });
+      row.querySelector('[data-r="del"]').addEventListener("click", function () { model.requisitos.splice(i, 1); save(); renderReq(); });
+    });
+    document.getElementById("reqAdd").addEventListener("click", function () { model.requisitos.push({ id: uid("r"), label: "", excluyente: false }); save(); renderReq(); });
+  }
+
+  /* ============ FORM BUILDER ============ */
+  function render() { renderReq(); renderForm(); }
+  window.fvFormRerender = render;
+  window.fvFormModel = function () { return model; };
+  window.fvFormReload = function () {
+    model = load() || seed();
+    model.pasos.forEach(function (p) {
+      if (p.campos) p.campos.forEach(function (c) { c.pii = detectPii(c.label); if (!c.pii) c.protegido = false; if (!c.origen) c.origen = "Ciudadano"; });
+      if (p.documentos) p.documentos.forEach(function (d) { if (!d.origen) d.origen = "Ciudadano"; if (d.obligatorio === undefined) d.obligatorio = false; });
+    });
+    model.requisitos.forEach(function (r) { if (!r.origen) r.origen = "Ciudadano"; });
+    save(); render();
+  };
+
+  function renderForm() {
+    var h = '<div class="fb-steps" id="fbSteps">';
+    model.pasos.forEach(function (p, i) { h += stepCard(p, i); });
+    h += "</div>";
+    h += '<button class="btn btn-secondary mt-4" id="fbAddStep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Agregar paso</button>';
+    root.innerHTML = h;
+    wireForm();
+  }
+
+  function stepCard(p, i) {
+    var m = stepMeta(p.tipo);
+    var cond = p.condicion ? ("Visible si «" + esc(p.condicion.campo) + "» = «" + esc(p.condicion.valor) + "»") : "Siempre visible";
+    return '<div class="fb-step" data-i="' + i + '">' +
+      '<div class="fb-step-h">' +
+        '<span class="fb-drag" draggable="true" title="Arrastra para reordenar">⋮⋮</span>' +
+        '<span class="fb-step-ic" style="color:var(--brand)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' + m.ic + "</svg></span>" +
+        '<input class="fb-inl fb-step-name" data-p="nombre" value="' + escA(p.nombre) + '" placeholder="Nombre del paso">' +
+        '<span class="badge neutral">' + m.l + "</span>" +
+        '<button class="fe-x" data-p="del" title="Eliminar paso">✕</button>' +
+      "</div>" +
+      '<div class="fb-cond"><button class="fb-cond-btn" data-p="cond"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M7 12h10M11 18h2"/></svg>' + cond + "</button></div>" +
+      '<div class="fb-step-body">' + stepBody(p) + "</div>" +
+    "</div>";
+  }
+
+  function stepBody(p) {
+    if (p.tipo === "formulario") return fieldsBody(p);
+    if (p.tipo === "documentos") return docsBody(p);
+    if (p.tipo === "pago") return '<label class="fb-lbl">Monto o cálculo<input class="fb-inl2" data-p="monto" value="' + escA(p.monto || "") + '" placeholder="Ej: 1% del presupuesto"></label><div class="fb-note">La plataforma nunca guarda el número de tarjeta (redirect / tokenización). La pasarela real (Webpay) se integra en producción.</div>';
+    if (p.tipo === "firma") return '<label class="fb-lbl">Proveedor de firma<select class="fb-inl2" data-p="prov"><option' + ((p.proveedor || "").indexOf("FirmaGob") >= 0 ? " selected" : "") + ">FirmaGob (ClaveÚnica)</option><option" + ((p.proveedor || "") === "Firma simple" ? " selected" : "") + ">Firma simple</option></select><div class=\"fb-note\">Firma electrónica avanzada del Estado. La integración certificada se conecta en producción.</div>";
+    if (p.tipo === "info") return '<textarea class="fb-inl2" data-p="texto" rows="3" placeholder="Texto que el ciudadano leerá en este paso">' + esc(p.texto || "") + "</textarea>";
+    return "";
+  }
+
+  function fieldsBody(p) {
+    var h = '<div class="fb-fields">';
+    (p.campos || []).forEach(function (c, j) {
+      h += '<div class="fb-field' + (c.pii && !c.protegido ? " pii" : "") + '" data-j="' + j + '">' +
+        '<span class="fb-drag" draggable="true" title="Arrastra para reordenar">⋮⋮</span>' +
+        '<div class="fb-field-main">' +
+          '<input class="fb-inl" data-f="label" value="' + escA(c.label) + '" placeholder="Etiqueta del campo">' +
+          '<div class="fb-field-row">' +
+            '<select class="fb-mini" data-f="tipo">' + FIELD_TYPES.map(function (t) { return '<option value="' + t.t + '"' + (t.t === c.tipo ? " selected" : "") + ">" + t.l + "</option>"; }).join("") + "</select>" +
+            '<label class="fb-mini-chk"><input type="checkbox" data-f="req"' + (c.requerido ? " checked" : "") + ">Obligatorio</label>" +
+            (c.tipo === "select" ? '<input class="fb-mini fb-opts" data-f="opts" value="' + escA((c.opciones || []).join(", ")) + '" placeholder="Opciones separadas por coma">' : "") +
+            origenSelectHtml(c.origen, "f") +
+            (c.pii ? '<label class="fb-mini-chk pii"><input type="checkbox" data-f="prot"' + (c.protegido ? " checked" : "") + ">" + (c.protegido ? "Protegido" : "Dato personal") + "</label>" : "") +
+          "</div>" +
+        "</div>" +
+        '<button class="fe-x" data-f="del" title="Quitar campo">✕</button>' +
+      "</div>";
+    });
+    h += '</div><button class="fb-add-field" data-add="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Agregar campo</button>';
+    return h;
+  }
+
+  function docsBody(p) {
+    var h = '<div class="fb-fields">';
+    (p.documentos || []).forEach(function (d, j) {
+      h += '<div class="fb-field" data-j="' + j + '">' +
+        '<span class="fb-doc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.6" style="width:16px;height:16px"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/></svg></span>' +
+        '<div class="fb-field-main">' +
+          '<input class="fb-inl" data-d="nombre" value="' + escA(d.nombre) + '" placeholder="Nombre del documento">' +
+          '<div class="fb-field-row">' +
+            '<select class="fb-mini" data-d="formato">' + DOC_FORMATS.map(function (f) { return "<option" + (f === d.formato ? " selected" : "") + ">" + f + "</option>"; }).join("") + "</select>" +
+            '<input class="fb-mini" data-d="tam" value="' + escA(d.tamMax || "") + '" placeholder="Tamaño máx">' +
+            '<input class="fb-mini fb-opts" data-d="desc" value="' + escA(d.descripcion || "") + '" placeholder="Descripción para el ciudadano">' +
+            '<label class="fb-mini-chk"><input type="checkbox" data-d="obl"' + (d.obligatorio ? " checked" : "") + ">Obligatorio</label>" +
+            origenSelectHtml(d.origen, "d") +
+          "</div>" +
+        "</div>" +
+        '<button class="fe-x" data-d="del" title="Quitar documento">✕</button>' +
+      "</div>";
+    });
+    h += '</div><button class="fb-add-field" data-add="doc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Agregar documento</button>';
+    return h;
+  }
+
+  var dragStepIdx = null, dragField = null;
+  function wireForm() {
+    var stepsWrap = document.getElementById("fbSteps");
+    document.getElementById("fbAddStep").addEventListener("click", openStepMenu);
+    stepsWrap.querySelectorAll(".fb-step").forEach(function (card) {
+      var i = +card.dataset.i, p = model.pasos[i];
+      card.querySelector('[data-p="nombre"]').addEventListener("input", function (e) { p.nombre = e.target.value; save(); });
+      card.querySelector('[data-p="del"]').addEventListener("click", function () { model.pasos.splice(i, 1); commit(); });
+      card.querySelector('[data-p="cond"]').addEventListener("click", function () { openCondEditor(i); });
+      var monto = card.querySelector('[data-p="monto"]'); if (monto) monto.addEventListener("input", function (e) { p.monto = e.target.value; save(); });
+      var prov = card.querySelector('[data-p="prov"]'); if (prov) prov.addEventListener("change", function (e) { p.proveedor = e.target.value; save(); });
+      var texto = card.querySelector('[data-p="texto"]'); if (texto) texto.addEventListener("input", function (e) { p.texto = e.target.value; save(); });
+      card.querySelectorAll(".fb-field[data-j]").forEach(function (frow) {
+        var j = +frow.dataset.j;
+        if (p.tipo === "formulario") {
+          var c = p.campos[j];
+          frow.querySelector('[data-f="label"]').addEventListener("input", function (e) {
+            c.label = e.target.value; var was = c.pii; c.pii = detectPii(c.label); if (!c.pii) c.protegido = false;
+            if (was !== c.pii) { renderForm(); } else save();
+            if (window.fvUpdatePublishGate) window.fvUpdatePublishGate();
+          });
+          frow.querySelector('[data-f="tipo"]').addEventListener("change", function (e) { c.tipo = e.target.value; commit(); });
+          frow.querySelector('[data-f="req"]').addEventListener("change", function (e) { c.requerido = e.target.checked; save(); });
+          var opts = frow.querySelector('[data-f="opts"]'); if (opts) opts.addEventListener("input", function (e) { c.opciones = e.target.value.split(",").map(function (s) { return s.trim(); }).filter(Boolean); save(); });
+          var prot = frow.querySelector('[data-f="prot"]'); if (prot) prot.addEventListener("change", function (e) { c.protegido = e.target.checked; commit(); });
+          frow.querySelector('[data-f="origen"]').addEventListener("change", function (e) { c.origen = e.target.value; commit(); });
+          frow.querySelector('[data-f="del"]').addEventListener("click", function () { p.campos.splice(j, 1); commit(); });
+        } else if (p.tipo === "documentos") {
+          var d = p.documentos[j];
+          frow.querySelector('[data-d="nombre"]').addEventListener("input", function (e) { d.nombre = e.target.value; save(); });
+          frow.querySelector('[data-d="formato"]').addEventListener("change", function (e) { d.formato = e.target.value; save(); });
+          frow.querySelector('[data-d="tam"]').addEventListener("input", function (e) { d.tamMax = e.target.value; save(); });
+          frow.querySelector('[data-d="desc"]').addEventListener("input", function (e) { d.descripcion = e.target.value; save(); });
+          var oblEl = frow.querySelector('[data-d="obl"]'); if (oblEl) oblEl.addEventListener("change", function (e) { d.obligatorio = e.target.checked; save(); });
+          frow.querySelector('[data-d="origen"]').addEventListener("change", function (e) { d.origen = e.target.value; commit(); });
+          frow.querySelector('[data-d="del"]').addEventListener("click", function () { p.documentos.splice(j, 1); commit(); });
+        }
+      });
+      var add = card.querySelector("[data-add]");
+      if (add) add.addEventListener("click", function () {
+        if (add.dataset.add === "field") { p.campos = p.campos || []; p.campos.push({ id: uid("c"), tipo: "texto", label: "", requerido: false, opciones: [], descripcion: "", pii: false, protegido: false }); }
+        else { p.documentos = p.documentos || []; p.documentos.push({ id: uid("d"), nombre: "", formato: "PDF", tamMax: "10 MB", descripcion: "" }); }
+        commit();
+      });
+      // drag-drop de campos (solo formulario)
+      if (p.tipo === "formulario") card.querySelectorAll(".fb-field[data-j]").forEach(function (frow) {
+        var handle = frow.querySelector(".fb-drag");
+        if (handle) {
+          handle.addEventListener("dragstart", function (e) { e.stopPropagation(); dragField = { s: i, f: +frow.dataset.j }; frow.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "f"); });
+          handle.addEventListener("dragend", function () { frow.classList.remove("dragging"); });
+        }
+        frow.addEventListener("dragover", function (e) { if (dragField && dragField.s === i) { e.preventDefault(); e.stopPropagation(); } });
+        frow.addEventListener("drop", function (e) { if (!dragField || dragField.s !== i) return; e.preventDefault(); e.stopPropagation(); var to = +frow.dataset.j; if (dragField.f !== to) { var mv = p.campos.splice(dragField.f, 1)[0]; p.campos.splice(to, 0, mv); } dragField = null; commit(); });
+      });
+      // drag-drop del paso (por su handle de cabecera)
+      var sh = card.querySelector(".fb-step-h .fb-drag");
+      if (sh) {
+        sh.addEventListener("dragstart", function (e) { dragStepIdx = i; card.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "s"); });
+        sh.addEventListener("dragend", function () { card.classList.remove("dragging"); });
+      }
+      card.addEventListener("dragover", function (e) { if (dragStepIdx != null) { e.preventDefault(); card.classList.add("drop-over"); } });
+      card.addEventListener("dragleave", function () { card.classList.remove("drop-over"); });
+      card.addEventListener("drop", function (e) { if (dragStepIdx == null) return; e.preventDefault(); card.classList.remove("drop-over"); var to = i; if (dragStepIdx !== to) { var mv = model.pasos.splice(dragStepIdx, 1)[0]; model.pasos.splice(to, 0, mv); } dragStepIdx = null; commit(); });
+    });
+    var pv = document.getElementById("fbPreview"); if (pv) pv.onclick = openPreview;
+  }
+
+  function openStepMenu() {
+    var ex = document.getElementById("fbStepMenu"); if (ex) { ex.remove(); return; }
+    var btn = document.getElementById("fbAddStep");
+    var menu = document.createElement("div"); menu.id = "fbStepMenu"; menu.className = "fe-menu";
+    menu.innerHTML = '<div class="fe-menu-hd">Tipo de paso</div>' + STEP_TYPES.map(function (s) { return '<button data-t="' + s.t + '"><b>' + s.l + "</b><span>" + s.d + "</span></button>"; }).join("");
+    root.appendChild(menu);
+    var r = btn.getBoundingClientRect(), rr = root.getBoundingClientRect();
+    menu.style.top = (r.bottom - rr.top + 6) + "px"; menu.style.left = Math.max(0, r.left - rr.left) + "px";
+    menu.querySelectorAll("button").forEach(function (b) { b.onclick = function () { addStep(b.dataset.t); menu.remove(); }; });
+    setTimeout(function () { document.addEventListener("pointerdown", function cl(e) { if (!menu.contains(e.target) && e.target !== btn) { menu.remove(); document.removeEventListener("pointerdown", cl); } }); }, 0);
+  }
+  function addStep(t) {
+    var base = { id: uid("p"), nombre: stepMeta(t).l, tipo: t, condicion: null };
+    if (t === "formulario") base.campos = [];
+    if (t === "documentos") base.documentos = [];
+    if (t === "pago") base.monto = "";
+    if (t === "firma") base.proveedor = "FirmaGob (ClaveÚnica)";
+    if (t === "info") base.texto = "";
+    model.pasos.push(base); commit(); toast("Paso agregado");
+  }
+
+  function openCondEditor(i) {
+    var p = model.pasos[i];
+    var names = fieldNamesBefore(i);
+    if (!names.length) { toast("Agrega campos en un paso anterior para poder condicionar este"); return; }
+    var cur = p.condicion || { campo: names[0], valor: "" };
+    var bg = document.createElement("div"); bg.className = "modal-bg open";
+    bg.innerHTML = '<div class="modal"><div class="modal-head"><h3>Visibilidad del paso</h3><button class="x" data-x>✕</button></div>' +
+      '<div class="modal-body">' +
+        '<div class="field"><label>Mostrar este paso</label><select class="input" id="condMode"><option value="siempre"' + (!p.condicion ? " selected" : "") + ">Siempre</option><option value=\"cond\"" + (p.condicion ? " selected" : "") + ">Solo si se cumple una condición</option></select></div>" +
+        '<div id="condFields"' + (p.condicion ? "" : ' style="display:none"') + '>' +
+          '<div class="field"><label>Campo de un paso anterior</label><select class="input" id="condCampo">' + names.map(function (n) { return "<option" + (n === cur.campo ? " selected" : "") + ">" + esc(n) + "</option>"; }).join("") + "</select></div>" +
+          '<div class="field" style="margin-bottom:0"><label>Es igual a</label><span id="condValWrap"></span></div>' +
+        "</div>" +
+      "</div>" +
+      '<div class="modal-foot"><button class="btn btn-ghost" data-x>Cancelar</button><button class="btn btn-primary" id="condSave">Guardar</button></div></div>';
+    document.body.appendChild(bg);
+    function renderVal() {
+      var campo = bg.querySelector("#condCampo").value; var vals = valuesFor(campo); var w = bg.querySelector("#condValWrap");
+      if (vals.length) w.innerHTML = '<select class="input" id="condVal">' + vals.map(function (v) { return "<option" + (v === cur.valor ? " selected" : "") + ">" + esc(v) + "</option>"; }).join("") + "</select>";
+      else w.innerHTML = '<input class="input" id="condVal" value="' + escA(cur.valor || "") + '" placeholder="valor esperado">';
+    }
+    renderVal();
+    bg.querySelector("#condMode").addEventListener("change", function (e) { bg.querySelector("#condFields").style.display = e.target.value === "cond" ? "" : "none"; });
+    bg.querySelector("#condCampo").addEventListener("change", renderVal);
+    function close() { bg.remove(); }
+    bg.querySelectorAll("[data-x]").forEach(function (b) { b.onclick = close; });
+    bg.addEventListener("click", function (e) { if (e.target === bg) close(); });
+    bg.querySelector("#condSave").onclick = function () {
+      if (bg.querySelector("#condMode").value === "siempre") p.condicion = null;
+      else p.condicion = { campo: bg.querySelector("#condCampo").value, valor: bg.querySelector("#condVal").value };
+      close(); commit();
+    };
+  }
+
+  /* ============ VISTA PREVIA EJECUTABLE ============ */
+  function firstVisible(from, answers) { for (var i = from; i < model.pasos.length; i++) if (stepVisible(model.pasos[i], answers)) return i; return model.pasos.length; }
+  function prevVisible(from, answers) { for (var i = from; i >= 0; i--) if (stepVisible(model.pasos[i], answers)) return i; return -1; }
+
+  function openPreview() {
+    var bg = document.createElement("div"); bg.className = "modal-bg open"; bg.id = "fbPreviewBg";
+    bg.innerHTML = '<div class="modal fb-preview"><div class="modal-head"><span class="badge brand"><span class="g"></span>Vista del ciudadano</span><button class="x" data-x style="margin-left:auto">✕</button></div><div class="modal-body" id="pvBody"></div></div>';
+    document.body.appendChild(bg);
+    bg.querySelectorAll("[data-x]").forEach(function (b) { b.onclick = function () { bg.remove(); }; });
+    // cierre por backdrop en mousedown (no click): evitar que un click en un botón interno,
+    // tras reemplazar el contenido, reincida sobre el fondo y cierre el modal
+    bg.addEventListener("mousedown", function (e) { if (e.target === bg) bg.remove(); });
+    renderPreview(bg, { phase: "requisitos", stepIdx: 0, answers: {} });
+  }
+
+  function renderPreview(bg, state) {
+    var body = bg.querySelector("#pvBody");
+    if (state.phase === "requisitos") {
+      // once-only: los requisitos que el Estado verifica se dan por cumplidos, no se le preguntan al ciudadano
+      model.requisitos.forEach(function (r, i) { if (esSistema(r.origen)) state.answers["req" + i] = true; });
+      var hayDeclarar = model.requisitos.some(function (r) { return !esSistema(r.origen); });
+      var h = '<div class="pv-step-head"><span class="pv-eyebrow">Antes de empezar</span><h4>Requisitos para postular</h4></div>' +
+        '<p class="pv-muted">' + (hayDeclarar ? "El Estado verifica algunos por ti; confirma los demás." : "El Estado verifica estos requisitos por ti — no necesitas declararlos.") + '</p><div class="pv-reqs">' +
+        model.requisitos.map(function (r, i) {
+          if (esSistema(r.origen)) return '<div class="pv-req sys"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg><span>' + esc(r.label) + ' <span class="pv-src">verificado · ' + esc(r.origen) + "</span></span></div>";
+          return '<label class="pv-req"><input type="checkbox" data-req="' + i + '"' + (state.answers["req" + i] ? " checked" : "") + "><span>" + esc(r.label) + (r.excluyente ? ' <b class="pv-exc">excluyente</b>' : "") + "</span></label>";
+        }).join("") + "</div>" +
+        '<div class="pv-block" id="pvReqBlock" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>No cumples un requisito excluyente. No puedes continuar con este trámite.</div>' +
+        '<div class="pv-nav"><div style="flex:1"></div><button class="btn btn-primary" id="pvStart">' + (hayDeclarar ? "Cumplo los requisitos · continuar" : "Continuar") + "</button></div>";
+      body.innerHTML = h;
+      body.querySelectorAll("[data-req]").forEach(function (cb) { cb.addEventListener("change", function () { state.answers["req" + cb.dataset.req] = cb.checked; }); });
+      body.querySelector("#pvStart").onclick = function () {
+        var missing = model.requisitos.some(function (r, idx) { return r.excluyente && !esSistema(r.origen) && !state.answers["req" + idx]; });
+        if (missing) { body.querySelector("#pvReqBlock").style.display = "flex"; return; }
+        state.phase = "pasos"; state.stepIdx = firstVisible(0, state.answers); renderPreview(bg, state);
+      };
+      return;
+    }
+    if (state.phase === "fin") {
+      body.innerHTML = '<div class="pv-done"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg><h4>Solicitud enviada</h4><p class="pv-muted">Se asignó el identificador <span class="code">IUIe-2026-014882</span> y se emitió el certificado de presentación. El ciudadano recibe el aviso automático.</p><button class="btn btn-secondary" data-xdone>Cerrar vista previa</button></div>';
+      body.querySelector("[data-xdone]").onclick = function () { bg.remove(); };
+      return;
+    }
+    var p = model.pasos[state.stepIdx];
+    if (!p) { state.phase = "fin"; renderPreview(bg, state); return; }
+    // once-only: pre-poblar los campos que el Estado ya tiene (para que confirme, no reingrese)
+    if (p.tipo === "formulario") (p.campos || []).forEach(function (c) { if (esSistema(c.origen) && !state.answers[c.label]) state.answers[c.label] = demoValue(c); });
+    var total = model.pasos.filter(function (pp) { return stepVisible(pp, state.answers); }).length;
+    var pos = model.pasos.slice(0, state.stepIdx + 1).filter(function (pp) { return stepVisible(pp, state.answers); }).length;
+    var last = firstVisible(state.stepIdx + 1, state.answers) >= model.pasos.length;
+    var h = '<div class="pv-progress"><div class="pv-progress-bar" style="width:' + Math.round(pos / total * 100) + '%"></div></div>' +
+      '<div class="pv-step-head"><span class="pv-eyebrow">Paso ' + pos + " de " + total + '</span><h4>' + esc(p.nombre) + "</h4></div>" +
+      pvStepBody(p, state) +
+      '<div class="pv-nav">' + (state.stepIdx > 0 ? '<button class="btn btn-ghost" id="pvBack">Atrás</button>' : "") + '<div style="flex:1"></div><button class="btn btn-primary" id="pvNext">' + (last ? "Enviar solicitud" : "Continuar") + "</button></div>";
+    body.innerHTML = h;
+    body.querySelectorAll(".pv-upload").forEach(function (u) { u.onclick = function () { u.classList.add("done"); u.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>archivo-demo.pdf'; }; });
+    body.querySelectorAll(".pv-updbtn").forEach(function (b) { b.onclick = function () { b.textContent = "Subido ✓"; b.classList.add("done"); var pd = b.closest(".pv-doc"); if (pd) pd.classList.add("done"); }; });
+    body.querySelector("#pvNext").onclick = function () {
+      // recolectar respuestas (los de sistema ya vienen resueltos; upload se valida aparte)
+      if (p.tipo === "formulario") (p.campos || []).forEach(function (c) { if (esSistema(c.origen) || c.tipo === "upload") return; var el = body.querySelector('[data-cf="' + c.id + '"]'); if (el) state.answers[c.label] = el.type === "checkbox" ? (el.checked ? "Sí" : "No") : el.value; });
+      // validar obligatorios antes de avanzar (la municipalidad no deja proceder sin lo requerido)
+      var faltan = [];
+      if (p.tipo === "formulario") (p.campos || []).forEach(function (c) {
+        if (!c.requerido || esSistema(c.origen)) return;
+        if (c.tipo === "upload") { var u = body.querySelector('.pv-upload[data-cf="' + c.id + '"]'); if (!u || !u.classList.contains("done")) faltan.push(c.label || "campo"); return; }
+        var v = state.answers[c.label]; if (v == null || String(v).trim() === "") faltan.push(c.label || "campo");
+      });
+      if (p.tipo === "documentos") (p.documentos || []).forEach(function (d) { if (d.obligatorio && !esSistema(d.origen)) { var pd = body.querySelector('[data-doc="' + d.id + '"]'); if (!pd || !pd.classList.contains("done")) faltan.push(d.nombre || "documento"); } });
+      if (faltan.length) { pvShowFaltan(body, faltan); return; }
+      var next = firstVisible(state.stepIdx + 1, state.answers);
+      if (next >= model.pasos.length) state.phase = "fin"; else state.stepIdx = next;
+      renderPreview(bg, state);
+    };
+    var back = body.querySelector("#pvBack"); if (back) back.onclick = function () { var pv = prevVisible(state.stepIdx - 1, state.answers); if (pv >= 0) { state.stepIdx = pv; renderPreview(bg, state); } };
+  }
+
+  function pvStepBody(p, state) {
+    if (p.tipo === "formulario") {
+      return '<div class="pv-form">' + (p.campos || []).map(function (c) {
+        var sistema = esSistema(c.origen);
+        var val = state.answers[c.label] || (sistema ? demoValue(c) : ""), inp;
+        if (sistema) inp = '<div class="pv-prefill"><span class="pv-prefill-v">' + esc(val) + '</span><span class="pv-src">traído de ' + esc(c.origen) + "</span></div>";
+        else if (c.tipo === "select") inp = '<select class="input" data-cf="' + c.id + '"><option value="">Elige…</option>' + (c.opciones || []).map(function (o) { return "<option" + (o === val ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>";
+        else if (c.tipo === "parrafo") inp = '<textarea class="input" data-cf="' + c.id + '" rows="3">' + esc(val) + "</textarea>";
+        else if (c.tipo === "checkbox") inp = '<label class="pv-chk"><input type="checkbox" data-cf="' + c.id + '"' + (val === "Sí" ? " checked" : "") + "> Sí</label>";
+        else if (c.tipo === "fecha") inp = '<input class="input" type="date" data-cf="' + c.id + '" value="' + escA(val) + '">';
+        else if (c.tipo === "upload") inp = '<div class="pv-upload" data-cf="' + c.id + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Seleccionar archivo (demo)</div>';
+        else inp = '<input class="input" type="' + (c.tipo === "numero" ? "number" : "text") + '" data-cf="' + c.id + '" value="' + escA(val) + '">';
+        return '<label class="pv-field"><span class="pv-flabel">' + esc(c.label || "Campo") + (c.requerido && !sistema ? ' <b class="pv-req-star">*</b>' : "") + (c.pii ? ' <span class="pv-pii">dato personal</span>' : "") + "</span>" + (c.descripcion && !sistema ? '<span class="pv-help">' + esc(c.descripcion) + "</span>" : "") + inp + "</label>";
+      }).join("") + "</div>";
+    }
+    if (p.tipo === "documentos") return '<div class="pv-docs">' + (p.documentos || []).map(function (d) {
+      if (esSistema(d.origen)) return '<div class="pv-doc sys"><div class="pv-doc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div style="flex:1"><b>' + esc(d.nombre) + '</b><div class="pv-help">El sistema lo obtiene de ' + esc(d.origen) + " — no necesitas adjuntarlo</div></div><span class=\"pv-src\">automático</span></div>";
+      return '<div class="pv-doc" data-doc="' + d.id + '"><div class="pv-doc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/></svg></div><div style="flex:1"><b>' + esc(d.nombre) + (d.obligatorio ? ' <b class="pv-req-star">*</b>' : "") + '</b><div class="pv-help">' + esc(d.formato) + " · máx " + esc(d.tamMax || "") + (d.descripcion ? " · " + esc(d.descripcion) : "") + '</div></div><button class="btn btn-secondary btn-sm pv-updbtn">Subir</button></div>';
+    }).join("") + "</div>";
+    if (p.tipo === "pago") return '<div class="pv-pay"><div class="pv-pay-amt"><span class="pv-help">Monto a pagar</span><b>' + esc(p.monto || "Según tasación") + '</b></div><div class="pv-help" style="margin-top:8px">La plataforma nunca guarda el número de tarjeta. En producción redirige a Webpay.</div></div>';
+    if (p.tipo === "firma") return '<div class="pv-sign"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.6"><path d="M3 17c3-1 5-9 8-9s2 6 4 6 3-3 5-3"/><path d="M3 21h18"/></svg><div><b>Firma con ' + esc(p.proveedor || "FirmaGob") + '</b><div class="pv-help">Firma electrónica avanzada. En producción se conecta con el proveedor certificado.</div></div></div>';
+    if (p.tipo === "info") return '<div class="pv-info">' + esc(p.texto || "") + "</div>";
+    return "";
+  }
+
+  render();
+  if (window.fvUpdatePublishGate) window.fvUpdatePublishGate();
+})();
+
+/* ============================================================
+   Portabilidad y versionado de la configuración municipal (inline)
+   Exportar/Importar plantilla JSON (sin núcleo legal) + versionado con anclaje.
+   El núcleo legal (Lemon) queda fuera: no se exporta, importa ni versiona (SoD 0005).
+   ============================================================ */
+(function () {
+  "use strict";
+  if (!document.getElementById("btnExport")) return;
+  var FLOW_KEY = "fvProcFlow.edificacion.v1", FORM_KEY = "fvCitizenForm.edificacion.v1", VER_KEY = "fvTramiteVersions.edificacion";
+
+  function lsParse(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
+  function toast(m) { var t = document.getElementById("toast"); var mm = document.getElementById("toastMsg"); if (mm) mm.textContent = m; t.classList.add("show"); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove("show"); }, 2800); }
+  function datosEls() { return document.querySelectorAll('[data-sec="datos"] .input'); }
+  function datosBasicos() { var e = datosEls(); return { nombre: e[0] ? e[0].value : "", unidad: e[1] ? e[1].value : "", baseLegal: e[2] ? e[2].value : "", descripcion: e[3] ? e[3].value : "" }; }
+  function setDatosBasicos(d) {
+    if (!d) return; var e = datosEls();
+    if (e[0] && d.nombre != null) e[0].value = d.nombre;
+    if (e[1] && d.unidad != null) e[1].value = d.unidad;
+    if (e[2] && d.baseLegal != null) e[2].value = d.baseLegal;
+    if (e[3] && d.descripcion != null) e[3].value = d.descripcion;
+    var h1 = document.querySelector('[data-sec="datos"] h1'); if (h1 && d.nombre) h1.textContent = d.nombre;
+  }
+
+  /* ---------- versiones (append-only, anclaje prospectivo) ---------- */
+  function verState() { return lsParse(VER_KEY) || { current: 10, history: [{ v: 8, estado: "retirada", fecha: "2025-11-10", ancladas: 0 }, { v: 9, estado: "vigente", fecha: "2026-06-01", ancladas: 12 }] }; }
+  function saveVer(s) { localStorage.setItem(VER_KEY, JSON.stringify(s)); }
+  function refreshVersionLabel() { var el = document.getElementById("cnVersion"); if (el) el.textContent = "Guardado automático · borrador v" + verState().current; }
+
+  /* ---------- exportar ---------- */
+  function exportTemplate() {
+    var d = datosBasicos();
+    var flujo = window.fvFlowModel ? window.fvFlowModel() : lsParse(FLOW_KEY);
+    var form = window.fvFormModel ? window.fvFormModel() : lsParse(FORM_KEY);
+    var tpl = { meta: { comuna: "Ñuñoa", tipo: d.nombre, exportedAt: new Date().toISOString(), appVersion: "prototipo-v" + verState().current }, datos: d, flujo: flujo, form: form };
+    var blob = new Blob([JSON.stringify(tpl, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "tramite-" + ((d.nombre || "tipo").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "tipo") + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    toast("Plantilla exportada · " + a.download);
+  }
+
+  /* ---------- importar (atómico: valida antes de escribir) ---------- */
+  function importTemplate(file) {
+    var rd = new FileReader();
+    rd.onload = function () {
+      var obj;
+      try { obj = JSON.parse(rd.result); } catch (e) { toast("El archivo no es un JSON válido — no se cambió nada"); return; }
+      if (!obj || !obj.flujo || !obj.form || obj.flujo.schemaVersion !== 3 || obj.form.schemaVersion !== 2) { toast("Plantilla incompatible (versión de esquema) — no se cambió nada"); return; }
+      if (!Array.isArray(obj.flujo.states) || !Array.isArray(obj.form.pasos) || !Array.isArray(obj.form.requisitos)) { toast("Plantilla corrupta — no se cambió nada"); return; }
+      // núcleo legal ignorado: solo se cargan flujo + formulario + datos no-legales
+      localStorage.setItem(FLOW_KEY, JSON.stringify(obj.flujo));
+      localStorage.setItem(FORM_KEY, JSON.stringify(obj.form));
+      setDatosBasicos(obj.datos);
+      if (window.fvFlowReload) window.fvFlowReload();
+      if (window.fvFormReload) window.fvFormReload();
+      if (window.fvUpdatePublishGate) window.fvUpdatePublishGate();
+      toast("Plantilla importada" + (obj.meta && obj.meta.comuna ? " desde " + obj.meta.comuna : "") + " · revisa y publica");
+    };
+    rd.readAsText(file);
+  }
+
+  /* ---------- modal de versiones ---------- */
+  function openVersions() {
+    var s = verState();
+    var bg = document.createElement("div"); bg.className = "modal-bg open";
+    var rows = s.history.slice().reverse().map(function (x) {
+      var cls = x.estado === "vigente" ? "resuelto" : (x.estado === "publicada" ? "neutral" : "archivado");
+      return '<div class="ver-row"><div class="ver-v">v' + x.v + '</div><div style="flex:1"><div class="ver-est"><span class="badge ' + cls + '"><span class="g"></span>' + x.estado + "</span></div><div class=\"tiny dim\">" + x.fecha + " · " + x.ancladas + " postulaci" + (x.ancladas === 1 ? "ón" : "ones") + " anclada" + (x.ancladas === 1 ? "" : "s") + "</div></div></div>";
+    }).join("");
+    bg.innerHTML = '<div class="modal wide"><div class="modal-head"><h3>Versiones de la configuración</h3><button class="x" data-x>✕</button></div>' +
+      '<div class="modal-body">' +
+        '<div class="ver-row cur"><div class="ver-v">v' + s.current + '</div><div style="flex:1"><div class="ver-est"><span class="badge revision"><span class="g"></span>borrador</span></div><div class="tiny dim">en edición · aún no publicada</div></div></div>' +
+        rows +
+        '<div class="banner info mt-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><p>Al publicar, los trámites en curso siguen con su versión anclada; la nueva versión rige solo para postulaciones nuevas (irretroactivo por defecto, como el núcleo legal 0006).</p></div></div>' +
+      "</div>" +
+      '<div class="modal-foot"><button class="btn btn-ghost" data-x>Cerrar</button><button class="btn btn-primary" id="verPub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 8l5-5 5 5M5 21h14"/></svg>Publicar v' + s.current + "</button></div></div>";
+    document.body.appendChild(bg);
+    bg.querySelectorAll("[data-x]").forEach(function (b) { b.onclick = function () { bg.remove(); }; });
+    bg.addEventListener("mousedown", function (e) { if (e.target === bg) bg.remove(); });
+    bg.querySelector("#verPub").onclick = function () { publishVersion(); bg.remove(); };
+  }
+  function publishVersion() {
+    var s = verState(), prev = s.current;
+    s.history.forEach(function (x) { if (x.estado === "vigente") x.estado = "publicada"; }); // la vigente pasa a histórica, SIN tocar sus ancladas
+    s.history.push({ v: prev, estado: "vigente", fecha: new Date().toISOString().slice(0, 10), ancladas: 0 });
+    s.current = prev + 1;
+    saveVer(s); refreshVersionLabel();
+    toast("v" + prev + " publicada · las postulaciones en curso siguen ancladas a su versión");
+  }
+
+  document.getElementById("btnExport").onclick = exportTemplate;
+  document.getElementById("btnVersions").onclick = openVersions;
+  var fi = document.getElementById("tplFile");
+  document.getElementById("btnImport").onclick = function () { fi.value = ""; fi.click(); };
+  fi.onchange = function () { if (fi.files && fi.files[0]) importTemplate(fi.files[0]); };
+  window.fvExportTemplate = exportTemplate; window.fvImportTemplateObj = function (obj) { var b = new Blob([JSON.stringify(obj)]); importTemplate(b); };
+  refreshVersionLabel();
+})();
+</script>
+<script src="app.js"></script>
+</body>
+</html>

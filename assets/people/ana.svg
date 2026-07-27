@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Ana Díaz">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3D6AD1"/><stop offset="1" stop-color="#2848A0"/>
+    </linearGradient>
+    <clipPath id="c"><circle cx="48" cy="48" r="48"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="96" height="96" fill="url(#g)"/>
+    <path d="M6 96C6 74 22 64 48 64s42 10 42 32Z" fill="#EDEFF3"/>
+    <path d="M29 96C31 78 37 70 48 70s17 8 19 26Z" fill="#334063"/>
+    <path d="M42 58h12v10a6 6 0 0 1-12 0Z" fill="#EBB98D"/>
+    <path d="M30 46c-1-14 8-22 18-22s19 8 18 22c-2-3-3-8-5-11-6 5-16 5-22 1-2 3-4 7-5 12-2-2-3-1-4-2Z" fill="#8E4B22"/>
+    <ellipse cx="48" cy="46" rx="15.5" ry="17.5" fill="#F5D0A8"/>
+    <path d="M31 40c-3 6-2 20 2 26-4-7-5-12-4-19 3-2 2-5 2-7ZM65 40c3 6 2 20-2 26 4-7 5-12 4-19-3-2-2-5-2-7Z" fill="#8E4B22"/>
+    <circle cx="41" cy="46" r="2" fill="#3A2A20"/>
+    <circle cx="55" cy="46" r="2" fill="#3A2A20"/>
+    <g stroke="#4A4038" stroke-width="1.5" fill="none">
+      <rect x="35.5" y="42" width="11" height="8" rx="3"/><rect x="49.5" y="42" width="11" height="8" rx="3"/><path d="M46.5 45h3"/>
+    </g>
+    <path d="M37 39.5c2-1.5 5-1.5 7 0M52 39.5c2-1.5 5-1.5 7 0" stroke="#7A431F" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M43 55c3 2.5 7 2.5 10 0" stroke="#C0765A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <circle cx="37" cy="51" r="2.4" fill="#EEA98A" opacity=".5"/>
+    <circle cx="59" cy="51" r="2.4" fill="#EEA98A" opacity=".5"/>
+  </g>
+</svg>

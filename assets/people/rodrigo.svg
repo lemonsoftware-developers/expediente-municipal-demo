@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Rodrigo Fuentes">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#20A0A6"/><stop offset="1" stop-color="#137277"/>
+    </linearGradient>
+    <clipPath id="c"><circle cx="48" cy="48" r="48"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="96" height="96" fill="url(#g)"/>
+    <path d="M6 96C6 74 22 64 48 64s42 10 42 32Z" fill="#3B4650"/>
+    <path d="M40 65l8 6 8-6 3 31H37Z" fill="#586470"/>
+    <path d="M44 66h8v3l-4 3-4-3Z" fill="#2E7D9E"/>
+    <path d="M42 58h12v10a6 6 0 0 1-12 0Z" fill="#E7B58C"/>
+    <ellipse cx="48" cy="46" rx="16" ry="17.5" fill="#F2CBA6"/>
+    <path d="M31 43c0-12 8-19 17-19s17 7 17 19c-3-5-5-8-8-9-5 4-15 4-20 1-2 2-4 4-6 8Z" fill="#4A3320"/>
+    <circle cx="41" cy="46" r="2.1" fill="#3A2A20"/>
+    <circle cx="55" cy="46" r="2.1" fill="#3A2A20"/>
+    <path d="M37 41c2-1 5-1 7 .5M52 41.5c2-1.5 5-1.5 7-.5" stroke="#4A3320" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    <path d="M44 55c2.5 2 5.5 2 8 0" stroke="#B9694F" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

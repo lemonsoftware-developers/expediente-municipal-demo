@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 40" role="img" aria-label="Servicio de Impuestos Internos">
+  <rect x="1" y="1" width="130" height="38" rx="8" fill="#FFFFFF" stroke="#D9E0E8"/>
+  <g transform="translate(11 9)">
+    <rect width="22" height="22" rx="5" fill="#123B78"/>
+    <path d="M6 6h10M6 11h10M6 16h6" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text x="40" y="25" font-family="'Segoe UI',Arial,sans-serif" font-size="16" font-weight="800" fill="#123B78" letter-spacing="1">SII</text>
+  <text x="72" y="24" font-family="'Segoe UI',Arial,sans-serif" font-size="9" font-weight="600" fill="#4B5763">Impuestos</text>
+</svg>

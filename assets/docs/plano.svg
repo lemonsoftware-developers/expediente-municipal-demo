@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 60" role="img" aria-label="Plano de arquitectura">
+  <path d="M6 2h26l10 10v44a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" fill="#153E63" stroke="#0E2C48" stroke-width="1.4"/>
+  <path d="M32 2l10 10H34a2 2 0 0 1-2-2Z" fill="#1C4E7A"/>
+  <g stroke="#7FB6E0" stroke-width="1.3" fill="none" opacity=".9">
+    <rect x="9" y="18" width="30" height="30"/>
+    <path d="M9 33h13v15M22 33V18M31 18v10h8M31 40h8"/>
+    <path d="M22 24h6" stroke-width="2.4"/>
+  </g>
+  <rect x="4" y="50" width="26" height="8" rx="1.5" fill="#2E9BE6"/>
+  <text x="17" y="56" text-anchor="middle" font-family="Arial,sans-serif" font-size="6.5" font-weight="800" fill="#FFFFFF">PLANO</text>
+</svg>

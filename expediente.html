@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Expediente 004821 · Permiso de edificación</title>
+<link rel="stylesheet" href="tokens.css">
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links">
+    <a href="index.html">Acceso</a>
+    <a href="funcionario.html">Funcionario</a>
+    <a href="bandeja.html">Bandeja</a>
+    <a href="nuevo.html">Crear</a>
+    <a href="expediente.html" class="active">Expediente</a>
+    <a href="recursos.html">Recursos</a>
+    <a href="notificaciones.html">Notificaciones</a>
+    <a href="caja.html">Caja</a>
+    <a href="fiscalizacion.html">Fiscalización</a>
+    <a href="concejo.html">Concejo</a>
+    <a href="supervisor.html">Supervisión</a>
+    <a href="admin.html">Administración</a>
+    <a href="eipd.html">EIPD</a>
+    <a href="ciudadano.html">Portal ciudadano</a>
+    <a href="movil.html">App terreno</a>
+  </nav>
+  <div class="topnav-right">
+    <button class="muni"><span class="dot">Ñ</span>Ñuñoa<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="side">
+    <div class="grp">
+      <a class="nav-item" href="funcionario.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Escritorio</a>
+      <a class="nav-item" href="bandeja.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M3 12h18M3 17h18"/></svg>Bandeja<span class="count">23</span></a>
+      <a class="nav-item active" href="expedientes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/></svg>Expedientes</a>
+      <a class="nav-item" href="movil.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.5-7-11a7 7 0 0114 0c0 6.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Terreno</a>
+    </div>
+    <div class="grp">
+      <div class="grp-label">Este expediente</div>
+      <a class="nav-item" href="recursos.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 14l-4-4 4-4M5 10h11a4 4 0 010 8h-1"/></svg>Recursos y partes</a>
+      <a class="nav-item" href="notificaciones.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Notificaciones</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="acct"><span class="avatar av-a">CM</span><div style="flex:1;min-width:0"><div style="font-size:var(--fs-12);font-weight:600">Carla Mardones</div><div class="tiny dim">Revisora · DOM</div></div></div>
+  </aside>
+  <main class="main" style="max-width:none">
+  <div class="breadcrumb"><a href="funcionario.html">DOM</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><a href="bandeja.html">Bandeja</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><span>Permiso de edificación</span></div>
+
+  <div class="page-head">
+    <div class="titles">
+      <div class="row" style="gap:10px;margin-bottom:6px"><span class="badge revision"><span class="g"></span>En revisión</span><span class="badge brand"><span class="g"></span>Versión legal v9 · anclada</span></div>
+      <h1>Ampliación de vivienda unifamiliar</h1>
+      <div class="row wrap" style="gap:16px;margin-top:8px;color:var(--text-3);font-size:var(--fs-12)">
+        <span class="mono">IUIe 13120-2026-004821</span>
+        <span>·</span><span>Ingreso 14 jul 2026</span>
+        <span>·</span><span>Constructora Vega Ltda. · 76.543.210-K</span>
+        <span>·</span><span>Av. Irarrázaval 3420, Ñuñoa</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="toast('Expediente derivado a revisor estructural')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h12M12 6l6 6-6 6"/></svg>Derivar</button>
+      <button class="btn btn-secondary" onclick="openObserve()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>Observar</button>
+      <button class="btn btn-primary" onclick="openResolve()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Resolver</button>
+    </div>
+  </div>
+
+  <div class="banner warn" style="margin-bottom:var(--s-5)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+    <div class="b-body"><b>Plazo legal: quedan 2 días hábiles</b><p>Silencio positivo el 25 jul 2026 (art. 65 Ley 19.880). El cómputo excluyó 2 feriados y 1 suspensión por decreto.</p></div>
+    <button class="btn btn-secondary btn-sm" onclick="toast('Traza del cómputo de plazo abierta')">Ver cómputo</button>
+  </div>
+
+  <!-- state machine -->
+  <div class="card" style="margin-bottom:var(--s-5)">
+    <div class="steps">
+      <div class="step done"><span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M20 6L9 17l-5-5"/></svg></span><span class="bar"></span></div>
+      <div class="step done"><span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><path d="M20 6L9 17l-5-5"/></svg></span><span class="bar"></span></div>
+      <div class="step current"><span class="node">3</span><span class="bar"></span></div>
+      <div class="step"><span class="node">4</span><span class="bar"></span></div>
+      <div class="step"><span class="node">5</span></div>
+    </div>
+    <div class="step-labels"><span class="on">Ingresado</span><span class="on">Admisibilidad</span><span class="on">En revisión</span><span>Resolución</span><span>Notificado</span></div>
+  </div>
+
+  <div class="g-12 grid">
+    <!-- content -->
+    <div class="col-8">
+      <div class="pill-tab" role="tablist">
+        <button class="on" data-tab="resumen">Resumen</button>
+        <button data-tab="docs">Documentos <span class="dim">6</span></button>
+        <button data-tab="traza">Trazabilidad</button>
+        <button data-tab="act">Actividad</button>
+      </div>
+
+      <section data-panel="resumen">
+        <div class="card" style="margin-bottom:var(--s-4)">
+          <div class="card-head"><h3>Descripción del trámite</h3></div>
+          <p class="muted" style="max-width:68ch;text-wrap:pretty">Solicitud de permiso de edificación para ampliación de 42 m² en segundo piso de vivienda unifamiliar existente. Incluye reforzamiento estructural y regularización de terraza. Uso de suelo compatible según plano regulador comunal (zona ZU-2).</p>
+          <div class="g-3 grid mt-4">
+            <div><div class="tiny dim">Superficie a ampliar</div><div style="font-weight:600;margin-top:2px">42,0 m²</div></div>
+            <div><div class="tiny dim">Derechos municipales</div><div style="font-weight:600;margin-top:2px">$184.320</div></div>
+            <div><div class="tiny dim">Revisor independiente</div><div style="font-weight:600;margin-top:2px">R. Soto · reg. 4471</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Verificaciones automáticas</h3><span class="sub">motor de reglas · v9</span></div>
+          <div class="stack" style="gap:2px">
+            <div class="row between" style="padding:8px 0;border-bottom:1px solid var(--border-faint)"><span class="row" style="gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.4" style="width:16px;height:16px"><path d="M20 6L9 17l-5-5"/></svg>Uso de suelo compatible (plano regulador)</span><span class="badge resuelto"><span class="g"></span>OK</span></div>
+            <div class="row between" style="padding:8px 0;border-bottom:1px solid var(--border-faint)"><span class="row" style="gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.4" style="width:16px;height:16px"><path d="M20 6L9 17l-5-5"/></svg>Firma FirmaGob del solicitante válida</span><span class="badge resuelto"><span class="g"></span>OK</span></div>
+            <div class="row between" style="padding:8px 0;border-bottom:1px solid var(--border-faint)"><span class="row" style="gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2.4" style="width:16px;height:16px"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>Cálculo estructural — requiere revisor</span><span class="badge revision"><span class="g"></span>Pendiente</span></div>
+            <div class="row between" style="padding:8px 0"><span class="row" style="gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.4" style="width:16px;height:16px"><path d="M20 6L9 17l-5-5"/></svg>Rasante y distanciamientos (OGUC art. 2.6.3)</span><span class="badge resuelto"><span class="g"></span>OK</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-panel="docs" class="hide">
+        <div class="card">
+          <div class="card-head"><h3>Documentos del expediente</h3><div class="actions"><button class="btn btn-secondary btn-sm" onclick="toast('Adjuntar documento')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Adjuntar</button></div></div>
+          <div class="stack" style="gap:0">
+            <div class="trow" style="height:58px;gap:12px"><img class="doc-thumb" src="assets/docs/plano.svg" alt=""><span class="ttl">Planos de arquitectura.pdf/a</span><span class="meta"><span class="code">firmado</span><span class="date">2,4 MB</span></span></div>
+            <div class="trow" style="height:58px;gap:12px"><img class="doc-thumb" src="assets/docs/firma.svg" alt=""><span class="ttl">Memoria de cálculo estructural.pdf/a</span><span class="meta"><span class="code">firmado</span><span class="date">1,1 MB</span></span></div>
+            <div class="trow" style="height:58px;gap:12px"><img class="doc-thumb" src="assets/docs/certificado.svg" alt=""><span class="ttl">Certificado de dominio vigente.pdf</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--info)"></span>CBR</span><span class="date">320 KB</span></span></div>
+            <div class="trow" style="height:58px;gap:12px"><img class="doc-thumb" src="assets/docs/certificado.svg" alt=""><span class="ttl">Certificado de informaciones previas.pdf/a</span><span class="meta"><span class="code">emitido</span><span class="date">210 KB</span></span></div>
+            <div class="trow" style="height:58px;gap:12px"><img class="doc-thumb" src="assets/docs/pdf.svg" alt=""><span class="ttl">Acta de inspección en terreno.pdf/a</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--warning)"></span>sellada en origen</span><span class="date">890 KB</span></span></div>
+            <div class="trow" style="height:58px;gap:12px"><img class="doc-thumb" src="assets/docs/foto.svg" alt=""><span class="ttl">Fotografías de terreno (4).zip</span><span class="meta"><span class="chip" style="height:20px"><span class="dot" style="background:var(--text-3)"></span>geo+hora</span><span class="date">5,2 MB</span></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-panel="traza" class="hide">
+        <div class="card">
+          <div class="card-head"><h3>Trazabilidad</h3><span class="sub">cadena de hash · WORM · sello SHOA</span></div>
+          <div class="banner brand" style="margin-bottom:var(--s-4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg><div class="b-body"><b>Cadena íntegra · 14 eslabones verificados</b><p>Cada evento sella el hash del anterior. Hora sincronizada con SHOA (Ley 19.799).</p></div></div>
+          <div class="feed">
+            <div class="fitem"><div class="rail"><span class="tick brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="line"></span></div><div class="body"><div class="top"><b>Inspección en terreno</b> registrada por Jorge Tapia · acta sellada en origen</div><div class="time">18 jul 2026 · 11:42:07 UTC · sello SHOA #A19-77</div><div class="hash">sha256: 9f2c…a4e1 ← prev 4b8d…c210</div></div></div>
+            <div class="fitem"><div class="rail"><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H5.2L4 17.2z"/></svg></span><span class="line"></span></div><div class="body"><div class="top">Observación de subsanación enviada al solicitante (art. 31)</div><div class="time">16 jul 2026 · 09:15:33 UTC</div><div class="hash">sha256: 4b8d…c210 ← prev 71aa…0e9f</div></div></div>
+            <div class="fitem"><div class="rail"><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></span><span class="line"></span></div><div class="body"><div class="top">Admisibilidad aprobada · verificación de firma FirmaGob</div><div class="time">14 jul 2026 · 16:02:11 UTC</div><div class="hash">sha256: 71aa…0e9f ← prev 0000…genesis</div></div></div>
+            <div class="fitem"><div class="rail"><span class="tick brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span></div><div class="body"><div class="top"><b>Ingreso del expediente</b> · IUIe asignado · versión legal v9 anclada</div><div class="time">14 jul 2026 · 15:58:40 UTC · certificado de presentación firmado</div><div class="hash">sha256: 0000…genesis</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-panel="act" class="hide">
+        <div class="card">
+          <div class="card-head"><h3>Actividad y comentarios</h3></div>
+          <div class="feed">
+            <div class="fitem"><div class="rail"><img class="pf" style="width:22px;height:22px" src="assets/people/jorge.svg" alt=""><span class="line"></span></div><div class="body"><div class="top"><b>Jorge Tapia</b> derivó al revisor estructural independiente</div><div class="time">hoy · 08:20</div></div></div>
+            <div class="fitem"><div class="rail"><img class="pf" style="width:22px;height:22px" src="assets/people/carla.svg" alt=""><span class="line"></span></div><div class="body"><div class="top"><b>Carla Mardones</b>: «Falta timbre del CBR en el certificado de dominio, ya solicitado.»</div><div class="time">ayer · 17:05</div></div></div>
+            <div class="fitem"><div class="rail"><span class="avatar av-e" style="width:22px;height:22px">CV</span></div><div class="body"><div class="top"><b>Constructora Vega</b> respondió la observación y adjuntó plano corregido</div><div class="time">16 jul · 09:15</div></div></div>
+          </div>
+          <div class="row mt-4" style="gap:8px"><input class="input" placeholder="Escribe un comentario interno…"><button class="btn btn-primary" onclick="toast('Comentario publicado')">Enviar</button></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- metadata sidebar -->
+    <div class="col-4 stack">
+      <div class="card">
+        <div class="card-head"><h3>Propiedades</h3></div>
+        <div class="meta-row"><span class="k">Estado</span><span class="v"><span class="badge revision"><span class="g"></span>En revisión</span></span></div>
+        <div class="meta-row"><span class="k">Responsable</span><span class="v row" style="gap:6px"><img class="pf" style="width:20px;height:20px" src="assets/people/carla.svg" alt="">Carla Mardones</span></div>
+        <div class="meta-row"><span class="k">Unidad</span><span class="v">DOM · Edificación</span></div>
+        <div class="meta-row"><span class="k">Prioridad</span><span class="v row" style="gap:6px"><span class="prio urgent"><i></i><i></i><i></i></span>Urgente</span></div>
+        <div class="meta-row"><span class="k">Vence</span><span class="v" style="color:var(--danger)">25 jul · 2d hábiles</span></div>
+        <div class="meta-row"><span class="k">Versión legal</span><span class="v"><span class="code">v9</span> anclada</span></div>
+        <div class="meta-row"><span class="k">IUIe</span><span class="v mono" style="font-size:var(--fs-12)">13120-2026-004821</span></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Continuidad legal</h3></div>
+        <div class="banner info" style="border:0;padding:0;background:transparent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><p style="color:var(--text-2)">Anclado a la versión vigente al ingreso. Un cambio normativo posterior no lo altera salvo override auditado (four-eyes).</p></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Notificaciones</h3><span class="sub">automáticas</span></div>
+        <p class="tiny dim" style="margin-bottom:8px">El ciudadano recibe cada cambio de estado por:</p>
+        <div class="row wrap" style="gap:8px"><span class="chip"><span class="dot" style="background:var(--success)"></span>Email</span><span class="chip"><span class="dot" style="background:var(--info)"></span>SMS</span><span class="chip"><span class="dot" style="background:var(--warning)"></span>Push</span></div>
+        <div class="row between mt-4" style="padding-top:10px;border-top:1px solid var(--border-faint)"><span class="tiny dim">Última: observación</span><span class="badge revision"><span class="g"></span>esperando acuse</span></div>
+        <a class="btn btn-secondary block mt-4" href="notificaciones.html">Ver seguimiento y reglas</a>
+      </div>
+    </div>
+  </div>
+  </main>
+</div>
+
+<!-- observar (subsanación art. 31) modal -->
+<div class="modal-bg" id="observe">
+  <div class="modal wide">
+    <div class="modal-head"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" style="width:20px;height:20px"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><h3>Observar el expediente</h3><button class="x" onclick="closeObserve()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <div class="banner info" style="margin-bottom:var(--s-4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><p style="color:var(--text-2)">Devuelve el trámite al ciudadano para que subsane (art. 31). El plazo se <b>suspende</b> mientras corrige, y la notificación se envía <b>automáticamente</b>.</p></div></div>
+      <div class="field"><label>Qué falta o debe corregir <span class="opt">— quedará en el expediente y en la notificación</span></label><textarea class="input" style="height:100px;padding-top:10px" placeholder="Ej: falta el timbre del CBR en el certificado de dominio.">Falta el timbre del CBR en el certificado de dominio vigente. Adjunte el documento timbrado para continuar.</textarea></div>
+      <div class="field" style="margin-bottom:0"><label>Plazo para subsanar</label><select class="input" style="appearance:none"><option>8 días hábiles (estándar art. 31)</option><option>5 días hábiles</option><option>10 días hábiles</option></select></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeObserve()">Cancelar</button><button class="btn btn-primary" onclick="closeObserve();toast('Observación publicada · ciudadano notificado automáticamente')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Publicar observación</button></div>
+  </div>
+</div>
+
+<!-- four-eyes resolve modal -->
+<div class="modal-bg" id="resolve">
+  <div class="modal wide">
+    <div class="modal-head"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" style="width:20px;height:20px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><h3>Resolver expediente · doble validación</h3><button class="x" onclick="closeResolve()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <div class="banner brand" style="margin-bottom:var(--s-4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><b>Regla four-eyes</b><p>Aprobar un permiso de edificación requiere un segundo aprobador distinto del revisor (separación de funciones).</p></div></div>
+      <div class="field"><label>Decisión</label>
+        <div class="seg" style="width:100%"><button class="on" style="flex:1">Aprobar</button><button style="flex:1">Aprobar con condiciones</button><button style="flex:1">Rechazar</button></div></div>
+      <div class="field"><label>Segundo aprobador (jefatura) <span class="opt">— obligatorio</span></label>
+        <select class="input" style="appearance:none"><option>Jorge Tapia — Jefe DOM</option><option>Rodrigo Soto — Subdirector</option></select></div>
+      <div class="field" style="margin-bottom:0"><label>Fundamento del acto <span class="opt">— quedará en el certificado</span></label><input class="input" placeholder="Cumple OGUC y plano regulador; sin observaciones pendientes."></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeResolve()">Cancelar</button><button class="btn btn-primary" onclick="closeResolve();toast('Enviado a segunda firma · FirmaGob')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Firmar y resolver</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+function toast(m){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function openResolve(){document.getElementById('resolve').classList.add('open')}
+function openObserve(){document.getElementById('observe').classList.add('open')}
+function closeObserve(){document.getElementById('observe').classList.remove('open')}
+document.getElementById('observe').addEventListener('click',e=>{if(e.target.id==='observe')closeObserve()});
+function closeResolve(){document.getElementById('resolve').classList.remove('open')}
+document.getElementById('resolve').addEventListener('click',e=>{if(e.target.id==='resolve')closeResolve()});
+// tabs
+document.querySelectorAll('.pill-tab button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.pill-tab button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  document.querySelectorAll('[data-panel]').forEach(p=>p.classList.toggle('hide',p.dataset.panel!==b.dataset.tab));
+});
+// seg toggles inside modal
+document.querySelectorAll('.modal .seg').forEach(s=>s.querySelectorAll('button').forEach(b=>b.onclick=()=>{s.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}));
+</script>
+<script src="flujo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

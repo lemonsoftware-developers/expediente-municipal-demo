@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 72" role="img" aria-label="Escudo de Maipú">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D94C4C"/><stop offset="1" stop-color="#A32E2E"/></linearGradient></defs>
+  <path d="M6 5h52v33c0 18-14 27-26 31C20 65 6 56 6 38Z" fill="url(#g)" stroke="#6E1C1C" stroke-width="2"/>
+  <path d="M6 40h52c0 14-13 22-26 26C19 62 6 54 6 40Z" fill="#2E63A8"/>
+  <path d="M6 40h52" stroke="#6E1C1C" stroke-width="1.5" opacity=".5"/>
+  <path d="M32 16l3 6.2 6.8 1-5 4.9 1.2 6.9L32 31.6l-6.2 3.3 1.2-6.9-5-4.9 6.8-1Z" fill="#F4E4C1"/>
+  <path d="M18 48h28M22 55h20" stroke="#EAF1F8" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

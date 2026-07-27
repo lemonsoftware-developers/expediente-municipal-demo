@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 40" role="img" aria-label="Gobierno de Chile">
+  <rect x="1" y="1" width="166" height="38" rx="8" fill="#FFFFFF" stroke="#D9E0E8"/>
+  <g transform="translate(12 8)">
+    <rect width="24" height="24" rx="5" fill="#0F3B82"/>
+    <path d="M12 4l2.6 5.4 5.9.8-4.3 4.2 1 5.9L12 23.4l-5.2 2.9 1-5.9-4.3-4.2 5.9-.8Z" fill="#FFFFFF"/>
+  </g>
+  <text x="44" y="18" font-family="'Segoe UI',Arial,sans-serif" font-size="12.5" font-weight="700" fill="#123047">Gobierno</text>
+  <text x="44" y="31" font-family="'Segoe UI',Arial,sans-serif" font-size="12.5" font-weight="400" fill="#4B5763">de Chile</text>
+</svg>

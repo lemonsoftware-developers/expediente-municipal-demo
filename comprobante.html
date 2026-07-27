@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comprobante de presentación</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .cp-main{max-width:640px;margin:0 auto;padding:var(--s-5) var(--s-5) var(--s-8)}
+  .doc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-3);padding:var(--s-7) var(--s-6);position:relative;overflow:hidden}
+  .doc::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,var(--brand-glow),transparent 70%);pointer-events:none}
+  .doc-head{display:flex;align-items:center;gap:14px;padding-bottom:var(--s-4);border-bottom:1px solid var(--border);margin-bottom:var(--s-5)}
+  .doc-head .seal{width:44px;height:44px;color:var(--brand)}
+  .doc-head h2{font-size:var(--fs-16)}
+  .doc-head .sub{font-size:var(--fs-12);color:var(--text-3)}
+  .drow{display:flex;padding:9px 0;border-bottom:1px solid var(--border-faint);font-size:var(--fs-13)}
+  .drow .k{width:150px;color:var(--text-3);flex-shrink:0}
+  .drow .v{color:var(--text-1);font-weight:500}
+  .qr{width:110px;height:110px;flex-shrink:0}
+  @media print{.topnav,.cp-actions,.toast{display:none!important} body{background:#fff} .doc{border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links">
+    <a href="index.html">Acceso</a><a href="ciudadano.html">Mis trámites</a><a href="catalogo.html">Trámites disponibles</a>
+  </nav>
+  <div class="topnav-right"><a class="btn btn-secondary btn-sm" href="ciudadano.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M15 18l-6-6 6-6"/></svg>Volver</a></div>
+</header>
+
+<div class="cp-main">
+  <div class="breadcrumb"><a href="ciudadano.html">Portal</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg><span>Comprobante</span></div>
+
+  <div class="doc" id="doc">
+    <div class="doc-head">
+      <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div style="flex:1"><h2>Certificado de presentación</h2><div class="sub">Municipalidad de Ñuñoa · Dirección de Obras Municipales</div></div>
+      <span class="badge resuelto"><span class="g"></span>Firmado FirmaGob</span>
+    </div>
+
+    <div class="row" style="gap:var(--s-5);align-items:flex-start">
+      <div style="flex:1">
+        <div class="drow"><span class="k">Identificador (IUIe)</span><span class="v mono">13120-2026-004826</span></div>
+        <div class="drow"><span class="k">Trámite</span><span class="v">Permiso de edificación</span></div>
+        <div class="drow"><span class="k">Solicitante</span><span class="v">María González · 12.345.678-9</span></div>
+        <div class="drow"><span class="k">Fecha de ingreso</span><span class="v">23 jul 2026 · 11:58 (hora SHOA)</span></div>
+        <div class="drow"><span class="k">Estado</span><span class="v">Ingresado · en tramitación</span></div>
+        <div class="drow" style="border-bottom:0"><span class="k">Sello de integridad</span><span class="v mono" style="font-size:var(--fs-11);word-break:break-all">sha256: 3f9a…c7e2</span></div>
+      </div>
+      <div style="text-align:center">
+        <svg class="qr" viewBox="0 0 29 29" shape-rendering="crispEdges"><rect width="29" height="29" fill="#fff"/><path fill="#04130e" d="M0 0h7v7h-7zM8 0h1v1h-1zM10 0h2v1h-2zM13 0h1v2h-1zM15 0h3v1h-3zM19 0h1v1h-1zM22 0h7v7h-7zM1 1h5v5h-5zM9 1h1v2h-1zM11 1h1v1h-1zM16 1h1v3h-1zM18 1h2v1h-2zM23 1h5v5h-5zM2 2h3v3h-3zM11 2h2v1h-2zM20 2h1v2h-1zM24 2h3v3h-3zM8 3h1v1h-1zM12 3h1v2h-1zM14 3h1v1h-1zM10 4h1v2h-1zM13 5h2v1h-2zM17 5h2v1h-2zM8 6h1v1h-1zM11 6h1v3h-1zM15 6h1v2h-1zM19 6h2v1h-2zM0 8h1v1h-1zM3 8h3v1h-3zM7 8h2v1h-2zM13 8h1v1h-1zM16 8h1v1h-1zM18 8h1v3h-1zM21 8h2v1h-2zM25 8h1v1h-1zM27 8h2v1h-2zM1 9h1v2h-1zM5 9h1v2h-1zM9 9h4v1h-4zM14 9h2v1h-2zM20 9h1v1h-1zM24 9h1v2h-1zM26 9h1v1h-1zM3 10h1v1h-1zM7 10h1v3h-1zM13 10h1v2h-1zM17 10h1v2h-1zM22 10h2v1h-2zM28 10h1v3h-1zM0 11h2v1h-2zM4 11h2v1h-2zM10 11h2v1h-2zM15 11h1v3h-1zM20 11h3v1h-3zM25 11h2v1h-2zM9 12h1v1h-1zM12 12h1v1h-1zM19 12h1v2h-1zM23 12h1v1h-1zM26 12h2v1h-2zM2 13h3v1h-3zM6 13h1v2h-1zM10 13h2v1h-2zM14 13h1v1h-1zM21 13h2v1h-2zM24 13h1v3h-1zM0 14h1v3h-1zM4 14h1v1h-1zM8 14h2v1h-2zM12 14h2v1h-2zM17 14h1v1h-1zM20 14h1v2h-1zM26 14h1v2h-1zM28 14h1v1h-1zM2 15h1v1h-1zM5 15h1v3h-1zM11 15h1v2h-1zM14 15h2v1h-2zM18 15h2v1h-2zM22 15h2v1h-2zM3 16h2v1h-2zM8 16h2v1h-2zM13 16h1v3h-1zM16 16h1v2h-1zM19 16h1v1h-1zM25 16h3v1h-3zM1 17h3v1h-3zM7 17h1v2h-1zM10 17h1v1h-1zM15 17h1v1h-1zM18 17h1v1h-1zM21 17h2v1h-2zM24 17h1v1h-1zM27 17h1v2h-1zM9 18h1v1h-1zM12 18h1v1h-1zM17 18h1v3h-1zM20 18h3v1h-3zM25 18h1v1h-1zM20 19h1v1h-1zM0 20h7v7h-7zM8 20h2v1h-2zM11 20h2v1h-2zM14 20h1v2h-1zM16 20h1v1h-1zM19 20h1v3h-1zM22 20h1v2h-1zM24 20h2v1h-2zM28 20h1v1h-1zM1 21h5v5h-5zM9 21h1v3h-1zM12 21h1v2h-1zM16 21h1v3h-1zM21 21h1v1h-1zM26 21h2v1h-2zM2 22h3v3h-3zM11 22h1v1h-1zM24 22h1v2h-1zM27 22h1v2h-1zM8 23h1v1h-1zM13 23h2v1h-2zM18 23h1v1h-1zM20 23h2v1h-2zM10 24h2v1h-2zM15 24h1v2h-1zM17 24h1v1h-1zM22 24h2v1h-2zM26 24h1v1h-1zM8 25h1v2h-1zM12 25h2v1h-2zM19 25h1v2h-1zM25 25h1v2h-1zM11 26h1v1h-1zM13 26h1v1h-1zM17 26h2v1h-2zM21 26h3v1h-3zM28 26h1v1h-1z"/></svg>
+        <div class="tiny dim" style="margin-top:8px">Verifica con este código</div>
+      </div>
+    </div>
+
+    <div class="banner brand" style="margin-top:var(--s-5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div class="b-body"><b>Documento verificable</b><p>Escanea el QR o valida el folio en el portal público. El sello SHOA garantiza la fecha y la integridad.</p></div></div>
+  </div>
+
+  <div class="cp-actions row" style="gap:8px;margin-top:var(--s-5);justify-content:center">
+    <button class="btn btn-secondary" onclick="window.print()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>Imprimir</button>
+    <button class="btn btn-primary" onclick="toast('Descargando comprobante.pdf')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Descargar PDF</button>
+    <button class="btn btn-ghost" onclick="toast('Folio válido · verificado en el portal público')">Verificar folio</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+function toast(m){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+</script>
+<script src="flujo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

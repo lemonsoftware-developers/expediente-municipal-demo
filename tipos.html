@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tipos de trámite · Configuración municipal</title>
+<link rel="stylesheet" href="tokens.css">
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links">
+    <a href="index.html">Acceso</a><a href="funcionario.html">Funcionario</a><a href="bandeja.html">Bandeja</a><a href="nuevo.html">Crear</a><a href="expediente.html">Expediente</a><a href="tipos.html" class="active">Tipos</a><a href="caja.html">Caja</a><a href="supervisor.html">Supervisión</a><a href="admin.html">Administración</a><a href="ciudadano.html">Portal ciudadano</a><a href="movil.html">App terreno</a>
+  </nav>
+  <div class="topnav-right">
+    <button class="muni"><span class="dot">Ñ</span>Ñuñoa<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="side">
+    <div class="grp">
+      <a class="nav-item active" href="tipos.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Tipos de trámite<span class="count">7</span></a>
+      <a class="nav-item" href="constructor.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M3 20l2-2m0 0l9-9a2.8 2.8 0 014 4l-9 9-5 1z"/></svg>Constructor</a>
+    </div>
+    <div class="grp">
+      <div class="grp-label">Referencia</div>
+      <a class="nav-item" href="tipos.html" style="opacity:.7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Núcleo legal (Lemon)</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="acct"><span class="avatar av-b">RF</span><div style="flex:1;min-width:0"><div style="font-size:var(--fs-12);font-weight:600">Rodrigo Fuentes</div><div class="tiny dim">Config · SECPLA</div></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="page-head">
+      <div class="titles"><div class="eyebrow">Configuración municipal · Ñuñoa</div><h1>Tipos de trámite</h1><p>Los trámites que tu municipio ofrece. Tú los configuras sin programar; el núcleo legal lo mantiene Lemon.</p></div>
+      <div class="actions"><a class="btn btn-primary" href="constructor.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Crear tipo de trámite</a></div>
+    </div>
+
+    <div class="banner brand" style="margin-bottom:var(--s-5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><b>Autoconfigurable, dentro de la ley</b><p>Defines campos, flujo y documentos sobre una plantilla legal fija. Para publicar, cada campo con dato personal debe tener su protección definida (si no, el sistema bloquea).</p></div></div>
+
+    <div class="g-4 grid" style="margin-bottom:var(--s-5)">
+      <div class="kpi"><div class="lbl">Publicados</div><div class="val tnum">5</div></div>
+      <div class="kpi"><div class="lbl">En borrador</div><div class="val tnum">1</div></div>
+      <div class="kpi accent"><div class="lbl">No conformes</div><div class="val tnum" style="color:var(--warning)">1</div><div class="foot">visibles al DPO (gate)</div></div>
+      <div class="kpi"><div class="lbl">Campos con dato personal</div><div class="val tnum">23</div><div class="foot">todos protegidos salvo 1</div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="q" placeholder="Buscar tipo de trámite…"></div>
+      <div class="grow"></div>
+      <div class="seg" id="filt"><button class="on" data-f="all">Todos</button><button data-f="pub">Publicados</button><button data-f="bor">Borrador</button><button data-f="nc">No conformes</button></div>
+    </div>
+
+    <div class="list" id="list">
+      <div class="trow" style="height:56px" data-s="pub" onclick="location.href='constructor.html'"><span style="width:36px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.8" style="width:20px;height:20px"><path d="M3 21h18M6 21V9l6-4 6 4v12M10 21v-6h4v6"/></svg></span><span class="ttl" style="flex:1"><div style="font-weight:600">Permiso de edificación</div><div class="tiny dim">DOM · LGUC/OGUC · 12 campos</div></span><span class="meta"><span class="badge brand"><span class="g"></span>Caso a caso</span><span class="code">v9</span><span class="badge resuelto"><span class="g"></span>Publicado</span></span></div>
+      <div class="trow" style="height:56px" data-s="pub" onclick="location.href='constructor.html'"><span style="width:36px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8" style="width:20px;height:20px"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span><span class="ttl" style="flex:1"><div style="font-weight:600">Recepción de obras</div><div class="tiny dim">DOM · 8 campos</div></span><span class="meta"><span class="badge neutral"><span class="g"></span>Prospectivo</span><span class="code">v4</span><span class="badge resuelto"><span class="g"></span>Publicado</span></span></div>
+      <div class="trow" style="height:56px" data-s="pub" onclick="location.href='constructor.html'"><span style="width:36px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8" style="width:20px;height:20px"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 016 0v2"/></svg></span><span class="ttl" style="flex:1"><div style="font-weight:600">Patente comercial</div><div class="tiny dim">Rentas · DL 3.063 · verifica SII · 10 campos</div></span><span class="meta"><span class="badge neutral"><span class="g"></span>Prospectivo</span><span class="code">v7</span><span class="badge resuelto"><span class="g"></span>Publicado</span></span></div>
+      <div class="trow" style="height:56px" data-s="pub" onclick="location.href='constructor.html'"><span style="width:36px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8" style="width:20px;height:20px"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 016 0v2"/></svg></span><span class="ttl" style="flex:1"><div style="font-weight:600">Patente de alcoholes</div><div class="tiny dim">Rentas · Ley 19.925 · requiere Concejo · 9 campos</div></span><span class="meta"><span class="badge observado"><span class="g"></span>Retroactivo</span><span class="code">v3</span><span class="badge resuelto"><span class="g"></span>Publicado</span></span></div>
+      <div class="trow" style="height:56px" data-s="pub" onclick="location.href='constructor.html'"><span style="width:36px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.8" style="width:20px;height:20px"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span class="ttl" style="flex:1"><div style="font-weight:600">Certificado de número domiciliario</div><div class="tiny dim">DOM · emisión rápida · 3 campos</div></span><span class="meta"><span class="badge neutral"><span class="g"></span>Prospectivo</span><span class="code">v2</span><span class="badge resuelto"><span class="g"></span>Publicado</span></span></div>
+      <div class="trow" style="height:56px" data-s="bor" onclick="location.href='constructor.html'"><span style="width:36px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.8" style="width:20px;height:20px"><path d="M12 21s-7-4.5-7-11a7 7 0 0114 0c0 6.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="ttl" style="flex:1"><div style="font-weight:600">Subvención social</div><div class="tiny dim">DIDECO · usa RSH (dato sensible) · requiere EIPD</div></span><span class="meta"><span class="badge revision"><span class="g"></span>EIPD pendiente</span><span class="code">v1</span><span class="badge revision"><span class="g"></span>Borrador</span></span></div>
+      <div class="trow" style="height:56px;background:var(--warning-soft)" data-s="nc" onclick="location.href='constructor.html'"><span style="width:36px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8" style="width:20px;height:20px"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></span><span class="ttl" style="flex:1"><div style="font-weight:600">Permiso de evento en espacio público</div><div class="tiny dim">DIDECO · publicado antes del gate de datos · visible al DPO</div></span><span class="meta"><span class="badge neutral"><span class="g"></span>Prospectivo</span><span class="code">v1</span><span class="badge observado"><span class="g"></span>No conforme</span></span></div>
+    </div>
+    <div id="empty" class="hide" style="text-align:center;padding:var(--s-8);color:var(--text-3)"><div style="color:var(--text-1);font-weight:600">Sin tipos en este filtro</div></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+function toast(m){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+const rows=[...document.querySelectorAll('#list .trow')];
+// Payoff de publicación desde el constructor: marca el tipo recién publicado (v10) y confirma
+(function(){var pub=sessionStorage.getItem('fvPublished');if(!pub)return;sessionStorage.removeItem('fvPublished');
+  var row=rows.find(function(r){return r.textContent.includes(pub);});
+  if(row){var code=row.querySelector('.code');if(code)code.textContent='v10';
+    row.style.transition='background .35s';row.style.background='var(--brand-soft)';
+    row.scrollIntoView({block:'center',behavior:'smooth'});
+    setTimeout(function(){row.style.background='';},2400);
+  }
+  setTimeout(function(){toast('«'+pub+'» publicado · v10 disponible para la ciudadanía');},250);
+})();
+document.querySelectorAll('#filt button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#filt button').forEach(x=>x.classList.remove('on'));b.classList.add('on');const f=b.dataset.f;let v=0;rows.forEach(r=>{const show=f==='all'||r.dataset.s===f;r.style.display=show?'':'none';if(show)v++});document.getElementById('empty').classList.toggle('hide',v>0)});
+document.getElementById('q').addEventListener('input',e=>{const t=e.target.value.toLowerCase();let v=0;rows.forEach(r=>{const show=r.textContent.toLowerCase().includes(t);r.style.display=show?'':'none';if(show)v++});document.getElementById('empty').classList.toggle('hide',v>0)});
+</script>
+<script src="app.js"></script>
+</body>
+</html>

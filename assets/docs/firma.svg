@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 60" role="img" aria-label="Documento firmado">
+  <path d="M6 2h26l10 10v44a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" fill="#FFFFFF" stroke="#D0D8E0" stroke-width="1.4"/>
+  <path d="M32 2l10 10H34a2 2 0 0 1-2-2Z" fill="#E7EDF3"/>
+  <path d="M11 16h18M11 21h18M11 26h12" stroke="#C3CDD7" stroke-width="2" stroke-linecap="round"/>
+  <path d="M10 40c4-5 6-5 8-2s3 4 6-1 5-4 8 1" stroke="#2E5CC8" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M10 45h20" stroke="#C3CDD7" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="36" cy="47" r="9" fill="#3DA06A"/>
+  <path d="M32 47l3 3 5-6" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
