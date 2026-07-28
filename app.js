@@ -611,36 +611,69 @@
     tip=document.createElement('div'); tip.className='fv-tip'; tip.style.display='none';
     document.body.appendChild(spot); document.body.appendChild(tip);
   }
-  function endTour(){ if(spot)spot.style.display='none'; if(tip)tip.style.display='none'; }
+  /* El spot y el tip son position:fixed. Igual que el anillo de los procesos guiados,
+     necesitan RESEGUIR al objetivo: con un solo cálculo a los 320 ms tras un
+     scrollIntoView asíncrono se quedaban clavados a medio camino, y sin listener de
+     scroll ni siquiera se recolocaban cuando el usuario scrolleaba a mano. */
+  var _spotEl=null,_spotRaf=0,_spotBound=false;
+  function _posSpot(){
+    if(!spot||!_spotEl||tip.style.display!=='block') return;
+    var r=_spotEl.getBoundingClientRect(), pad=6;
+    if(!r.width&&!r.height){ spot.style.display='none'; return; }
+    spot.style.display='block';
+    spot.style.top=(r.top-pad)+'px'; spot.style.left=(r.left-pad)+'px';
+    spot.style.width=(r.width+pad*2)+'px'; spot.style.height=(r.height+pad*2)+'px';
+    var th=tip.offsetHeight, tw=tip.offsetWidth, vh=window.innerHeight, vw=window.innerWidth;
+    var top=r.bottom+12; if(top+th>vh-8) top=Math.max(8, r.top-th-12);
+    var left=r.left; if(left+tw>vw-8) left=vw-tw-8; if(left<8) left=8;
+    tip.style.top=top+'px'; tip.style.left=left+'px';
+  }
+  function _trackSpot(){
+    cancelAnimationFrame(_spotRaf);
+    var quietos=0,last=null,t0=(window.performance&&performance.now)?performance.now():Date.now();
+    (function step(){
+      if(!spot||!_spotEl||tip.style.display!=='block') return;
+      _posSpot();
+      var r=_spotEl.getBoundingClientRect();
+      var key=Math.round(r.top)+':'+Math.round(r.left)+':'+Math.round(r.width)+':'+Math.round(r.height);
+      quietos=(key===last)?quietos+1:0; last=key;
+      var ahora=(window.performance&&performance.now)?performance.now():Date.now();
+      if(quietos>=3||(ahora-t0)>2000) return;
+      _spotRaf=requestAnimationFrame(step);
+    })();
+  }
+  function endTour(){
+    cancelAnimationFrame(_spotRaf); _spotRaf=0; _spotEl=null;
+    if(spot)spot.style.display='none'; if(tip)tip.style.display='none';
+  }
   function showStep(){
     const s=steps[idx]; const el=document.querySelector(s.sel);
     if(!el){ next(); return; }
+    _spotEl=el;
     el.scrollIntoView({block:'center',behavior:'smooth'});
-    setTimeout(function(){
-      const r=el.getBoundingClientRect(); const pad=6;
-      spot.style.display='block';
-      spot.style.top=(r.top-pad)+'px'; spot.style.left=(r.left-pad)+'px';
-      spot.style.width=(r.width+pad*2)+'px'; spot.style.height=(r.height+pad*2)+'px';
-      tip.style.display='block';
-      tip.innerHTML='<div class="ey">Paso '+(idx+1)+' de '+steps.length+'</div><h4>'+s.t+'</h4><p>'+s.d+'</p>'+
-        '<div class="bar"><div class="fv-dots">'+steps.map(function(_,i){return '<i class="'+(i===idx?'on':'')+'"></i>';}).join('')+'</div>'+
-        (idx>0?'<button class="btn btn-ghost btn-sm" id="fvPrev">Atrás</button>':'')+
-        '<button class="btn btn-secondary btn-sm" id="fvSkip">Saltar</button>'+
-        '<button class="btn btn-primary btn-sm" id="fvNext">'+(idx===steps.length-1?'Terminar':'Siguiente')+'</button></div>';
-      // position tip: below target if room, else above
-      const th=tip.offsetHeight, tw=tip.offsetWidth, vh=window.innerHeight, vw=window.innerWidth;
-      let top=r.bottom+12; if(top+th>vh-8) top=Math.max(8, r.top-th-12);
-      let left=r.left; if(left+tw>vw-8) left=vw-tw-8; if(left<8) left=8;
-      tip.style.top=top+'px'; tip.style.left=left+'px';
-      const nx=document.getElementById('fvNext'); nx&&nx.addEventListener('click',next);
-      const pv=document.getElementById('fvPrev'); pv&&pv.addEventListener('click',prev);
-      const sk=document.getElementById('fvSkip'); sk&&sk.addEventListener('click',endTour);
-    },320);
+    // el contenido del tip se construye YA (no dentro de un timeout): así _posSpot puede
+    // medir su alto/ancho reales para decidir si va arriba o abajo del objetivo.
+    tip.style.display='block';
+    tip.innerHTML='<div class="ey">Paso '+(idx+1)+' de '+steps.length+'</div><h4>'+s.t+'</h4><p>'+s.d+'</p>'+
+      '<div class="bar"><div class="fv-dots">'+steps.map(function(_,i){return '<i class="'+(i===idx?'on':'')+'"></i>';}).join('')+'</div>'+
+      (idx>0?'<button class="btn btn-ghost btn-sm" id="fvPrev">Atrás</button>':'')+
+      '<button class="btn btn-secondary btn-sm" id="fvSkip">Saltar</button>'+
+      '<button class="btn btn-primary btn-sm" id="fvNext">'+(idx===steps.length-1?'Terminar':'Siguiente')+'</button></div>';
+    const nx=document.getElementById('fvNext'); nx&&nx.addEventListener('click',next);
+    const pv=document.getElementById('fvPrev'); pv&&pv.addEventListener('click',prev);
+    const sk=document.getElementById('fvSkip'); sk&&sk.addEventListener('click',endTour);
+    _posSpot(); _trackSpot();
+    if(!_spotBound){
+      // capture=true para oír también el scroll de contenedores internos (el shell
+      // scrollea .main, no el documento)
+      window.addEventListener('scroll',_trackSpot,true);
+      window.addEventListener('resize',_posSpot);
+      _spotBound=true;
+    }
   }
   function next(){ if(idx>=steps.length-1){ endTour(); return; } idx++; showStep(); }
   function prev(){ if(idx>0){ idx--; showStep(); } }
   window.addEventListener('keydown',function(e){ if(tip&&tip.style.display==='block'){ if(e.key==='Escape')endTour(); if(e.key==='ArrowRight')next(); if(e.key==='ArrowLeft')prev(); } });
-  window.addEventListener('resize',function(){ if(tip&&tip.style.display==='block')showStep(); });
 
   // expose for debugging / external triggers
   window.fvStartTour=startTour;
@@ -679,7 +712,25 @@
 
   /* ---- resaltado del objetivo del paso guiado (anillo "haz clic aquí") ---- */
   var _jhl=null,_jhlEl=null,_jhlBound=false,_jhlRaf=0,_jhlRO=null;
-  function _posJhl(){ if(!_jhl||!_jhlEl)return; var r=_jhlEl.getBoundingClientRect(); if(r.width===0&&r.height===0){ _jhl.style.display='none'; return; } _jhl.style.display='block'; var p=6; _jhl.style.top=(r.top-p)+'px'; _jhl.style.left=(r.left-p)+'px'; _jhl.style.width=(r.width+p*2)+'px'; _jhl.style.height=(r.height+p*2)+'px'; }
+  function _posJhl(){
+    if(!_jhl||!_jhlEl)return;
+    var r=_jhlEl.getBoundingClientRect();
+    if(r.width===0&&r.height===0){ _jhl.style.display='none'; return; }
+    _jhl.style.display='block'; var p=6;
+    _jhl.style.top=(r.top-p)+'px'; _jhl.style.left=(r.left-p)+'px';
+    _jhl.style.width=(r.width+p*2)+'px'; _jhl.style.height=(r.height+p*2)+'px';
+    // La etiqueta cuelga a la derecha del anillo; si el objetivo está pegado al borde
+    // derecho se cortaba a media palabra ("RESUELVE CON DOBLE FI"). Se voltea hacia la
+    // izquierda cuando no cabe, y se limita al ancho disponible.
+    var tag=_jhl.firstChild;
+    if(tag&&tag.style){
+      tag.style.left=''; tag.style.right='';
+      var vw=document.documentElement.clientWidth, tw=tag.offsetWidth;
+      if((r.left-p)+12+tw > vw-8){ tag.style.left='auto'; tag.style.right='12px'; }
+      else { tag.style.left='12px'; tag.style.right='auto'; }
+      tag.style.maxWidth=Math.max(80, vw-16)+'px';
+    }
+  }
   /* PERSEGUIR el objetivo hasta que se detiene, en vez de apostar a un timeout fijo.
      `scrollIntoView({behavior:'smooth'})` es ASÍNCRONO y su duración depende de la
      distancia, del equipo y del contenido que aún esté reflowando (la pantalla del
@@ -708,7 +759,7 @@
     cancelAnimationFrame(_jhlRaf); _jhlRaf=0;
     if(_jhlRO){ try{ _jhlRO.disconnect(); }catch(e){} _jhlRO=null; }
     if(_jhl){ _jhl.remove(); _jhl=null; } _jhlEl=null;
-    if(_jhlBound){ window.removeEventListener('scroll',_posJhl,true); window.removeEventListener('resize',_posJhl); _jhlBound=false; }
+    if(_jhlBound){ window.removeEventListener('scroll',_trackJhl,true); window.removeEventListener('resize',_posJhl); _jhlBound=false; }
   }
   function highlightTarget(sel, tag){
     clearHighlight(); if(!sel) return false;
@@ -728,7 +779,10 @@
     document.body.appendChild(_jhl);
     try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){}
     _posJhl(); _trackJhl();
-    window.addEventListener('scroll',_posJhl,true); window.addEventListener('resize',_posJhl); _jhlBound=true;
+    // En scroll se RELANZA el seguimiento (no un solo _posJhl): así vuelve a quitarse la
+    // transición mientras el usuario arrastra y el anillo no se queda 250ms por detrás.
+    // _trackJhl cancela su rAF anterior al entrar, así que es seguro re-entrarlo.
+    window.addEventListener('scroll',_trackJhl,true); window.addEventListener('resize',_posJhl); _jhlBound=true;
     // Segunda línea de defensa: el layout también cambia SIN scroll (una imagen que
     // carga, un acordeón que se abre, la fuente que reemplaza al fallback). Sin esto,
     // el anillo quedaría desalineado hasta que el usuario scrollee.
