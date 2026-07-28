@@ -667,15 +667,49 @@
   '.fv-jbar .step .hint svg{width:13px;height:13px}'+
   /* anillo pulsante que señala DÓNDE hacer clic en el paso actual */
   '.fv-jhl{position:fixed;z-index:388;pointer-events:none;border:2.5px solid var(--brand);border-radius:10px;transition:top .25s var(--ease),left .25s var(--ease),width .25s var(--ease),height .25s var(--ease);animation:fvjpulse 1.5s ease-in-out infinite}'+
+  /* mientras persigue al objetivo (scroll en curso) el anillo va SIN transición: con
+     ella se arrastra 250ms por detrás y se lee como si estuviera pegado en otro sitio.
+     Al detenerse recupera la transición para los reajustes finos posteriores. */
+  '.fv-jhl.tracking{transition:none}'+
+  '@media(prefers-reduced-motion:reduce){.fv-jhl{transition:none;animation:none}}'+
   '@keyframes fvjpulse{0%,100%{box-shadow:0 0 0 3px var(--brand-glow),0 0 12px 2px var(--brand-glow)}50%{box-shadow:0 0 0 7px transparent,0 0 22px 7px var(--brand-glow)}}'+
   '.fv-jhl .tag{position:absolute;top:-12px;left:12px;background:var(--brand);color:var(--text-on-brand);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:999px;white-space:nowrap;box-shadow:var(--sh-sm)}'+
   '@media(max-width:760px){.fv-jbar{flex-wrap:wrap;gap:8px}.fv-jbar .step{flex-basis:100%;order:3}}';
   document.head.appendChild(jcss);
 
   /* ---- resaltado del objetivo del paso guiado (anillo "haz clic aquí") ---- */
-  var _jhl=null,_jhlEl=null,_jhlBound=false;
+  var _jhl=null,_jhlEl=null,_jhlBound=false,_jhlRaf=0,_jhlRO=null;
   function _posJhl(){ if(!_jhl||!_jhlEl)return; var r=_jhlEl.getBoundingClientRect(); if(r.width===0&&r.height===0){ _jhl.style.display='none'; return; } _jhl.style.display='block'; var p=6; _jhl.style.top=(r.top-p)+'px'; _jhl.style.left=(r.left-p)+'px'; _jhl.style.width=(r.width+p*2)+'px'; _jhl.style.height=(r.height+p*2)+'px'; }
-  function clearHighlight(){ if(_jhl){ _jhl.remove(); _jhl=null; } _jhlEl=null; if(_jhlBound){ window.removeEventListener('scroll',_posJhl,true); window.removeEventListener('resize',_posJhl); _jhlBound=false; } }
+  /* PERSEGUIR el objetivo hasta que se detiene, en vez de apostar a un timeout fijo.
+     `scrollIntoView({behavior:'smooth'})` es ASÍNCRONO y su duración depende de la
+     distancia, del equipo y del contenido que aún esté reflowando (la pantalla del
+     iframe carga después). Con un setTimeout fijo el anillo se quedaba clavado a mitad
+     de camino y solo se recolocaba cuando el usuario scrolleaba a mano — el bug real.
+     Aquí se reposiciona en cada frame hasta que el rect no cambia durante 3 frames
+     seguidos (o se agota el tope de seguridad), así acompaña al scroll de principio a fin. */
+  function _trackJhl(){
+    cancelAnimationFrame(_jhlRaf);
+    var quietos=0, last=null, t0=(window.performance&&performance.now)?performance.now():Date.now();
+    if(_jhl) _jhl.classList.add('tracking');   // sin transición mientras persigue: si no, va por detrás
+    (function step(){
+      if(!_jhl||!_jhlEl) return;
+      _posJhl();
+      var r=_jhlEl.getBoundingClientRect();
+      var key=Math.round(r.top)+':'+Math.round(r.left)+':'+Math.round(r.width)+':'+Math.round(r.height);
+      quietos = (key===last) ? quietos+1 : 0;
+      last=key;
+      var ahora=(window.performance&&performance.now)?performance.now():Date.now();
+      // 3 frames sin moverse = el scroll terminó · 2s = tope duro por si algo anima sin fin
+      if(quietos>=3 || (ahora-t0)>2000){ if(_jhl) _jhl.classList.remove('tracking'); return; }
+      _jhlRaf=requestAnimationFrame(step);
+    })();
+  }
+  function clearHighlight(){
+    cancelAnimationFrame(_jhlRaf); _jhlRaf=0;
+    if(_jhlRO){ try{ _jhlRO.disconnect(); }catch(e){} _jhlRO=null; }
+    if(_jhl){ _jhl.remove(); _jhl=null; } _jhlEl=null;
+    if(_jhlBound){ window.removeEventListener('scroll',_posJhl,true); window.removeEventListener('resize',_posJhl); _jhlBound=false; }
+  }
   function highlightTarget(sel, tag){
     clearHighlight(); if(!sel) return false;
     // sel puede ser una LISTA de selectores: se usa el primero que exista y sea
@@ -693,8 +727,17 @@
     _jhl.innerHTML='<span class="tag"></span>'; _jhl.firstChild.textContent = tag || 'Haz clic aquí';
     document.body.appendChild(_jhl);
     try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){}
-    _posJhl(); setTimeout(_posJhl,380);
+    _posJhl(); _trackJhl();
     window.addEventListener('scroll',_posJhl,true); window.addEventListener('resize',_posJhl); _jhlBound=true;
+    // Segunda línea de defensa: el layout también cambia SIN scroll (una imagen que
+    // carga, un acordeón que se abre, la fuente que reemplaza al fallback). Sin esto,
+    // el anillo quedaría desalineado hasta que el usuario scrollee.
+    if(window.ResizeObserver){
+      try{
+        _jhlRO=new ResizeObserver(function(){ _posJhl(); });
+        _jhlRO.observe(el); _jhlRO.observe(document.documentElement);
+      }catch(e){ _jhlRO=null; }
+    }
     return true;
   }
 
