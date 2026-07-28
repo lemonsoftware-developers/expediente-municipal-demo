@@ -55,7 +55,11 @@
   /* ---- Type: condensed institutional grotesque (ops-board voice) ---- */
   --font-ui: 'Bahnschrift','DIN Alternate','DIN Condensed','Oswald','Roboto Condensed',ui-sans-serif,system-ui,-apple-system,sans-serif;
   --font-mono: ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
-  --fs-11:11px; --fs-12:12px; --fs-13:13px; --fs-16:16px; --fs-20:20px;
+  /* tramo denso (UI): 11→16 de uno en uno · tramo editorial: ×1.25 desde 20.
+     14 y 15 cierran el hueco entre el cuerpo (13) y el título de bloque (16);
+     se usaban ya en demo.html sin estar definidos → la declaración era inválida
+     y esos textos heredaban 13px en silencio. */
+  --fs-11:11px; --fs-12:12px; --fs-13:13px; --fs-14:14px; --fs-15:15px; --fs-16:16px; --fs-20:20px;
   --fs-25:25px; --fs-31:31px; --fs-39:39px; --fs-49:49px;
 
   /* ---- Space 4/8 ---- */

@@ -15,7 +15,7 @@
 (function(){
   "use strict";
   if((location.pathname.split('/').pop()||'')!=='nuevo.html') return;
-  // el rol efectivo respeta ?as=<rol> del deck (embed) por encima del localStorage previo,
+  // el rol efectivo respeta ?as=<rol> del reproductor de la demo (embed) por encima del localStorage previo,
   // sin depender del orden en que carguen los scripts.
   var role; try{ role=(location.search.match(/[?&]as=([a-z]+)/)||[])[1] || localStorage.getItem('fvRole'); }catch(e){}
   if(role!=='ciudadano') return;   // solo el ciudadano

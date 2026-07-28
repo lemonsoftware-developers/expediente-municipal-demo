@@ -202,7 +202,7 @@
   /* ---------- Procesos guiados (llevan al usuario PASO A PASO por una tarea) ---------- */
   const JOURNEYS = {
     permiso:{title:'Tramitar un permiso de edificación', role:'funcionario', steps:[
-      {screen:'nuevo.html', label:'Paso 1 · Crear el trámite', instr:'Elige el tipo de trámite, identifica al solicitante y completa los 5 pasos. Al presentar se asigna el IUIe y se emite el certificado.', target:'#nextBtn'},
+      {screen:'nuevo.html', label:'Paso 1 · Crear el trámite', instr:'Elige el tipo de trámite, identifica al solicitante y completa los 5 pasos. Al presentar se asigna el IUIe y se emite el certificado.', target:['#nextBtn','#fvcNext']},
       {screen:'bandeja.html', label:'Paso 2 · Ubicarlo en la bandeja', instr:'Tu trámite aparece agrupado por estado (en revisión, observado…). Ábrelo para gestionarlo.', target:'.trow'},
       {screen:'expediente.html', label:'Paso 3 · Revisar el expediente', instr:'Verifica documentos y trazabilidad, y mira las verificaciones automáticas. Aquí resuelves con doble firma (four-eyes).', target:'.btn-primary'},
       {screen:'notificaciones.html', label:'Paso 4 · La notificación es automática', instr:'Al resolver, el sistema notifica al ciudadano por los canales configurados y registra el acuse — el funcionario no envía nada a mano. Aquí ves las reglas automáticas y el seguimiento; el envío manual es solo la excepción.', target:'.pill-tab'}
@@ -210,7 +210,7 @@
     ciudadano:{title:'Iniciar un trámite en línea', role:'ciudadano', steps:[
       {screen:'catalogo.html', label:'Paso 1 · Buscar el trámite', instr:'Busca lo que necesitas o explora por categoría (obras, patentes, vehículos…). No necesitas saber el nombre exacto.', target:'.tcard'},
       {screen:'ficha.html', label:'Paso 2 · Revisar la ficha', instr:'Antes de empezar, revisa requisitos, documentos, costo y plazo. Reúne lo necesario para no interrumpirte.', target:'.aside .btn-primary'},
-      {screen:'nuevo.html', label:'Paso 3 · Iniciar con ClaveÚnica', instr:'Inicia sesión con ClaveÚnica y completa el formulario paso a paso. Al presentar recibes tu comprobante con el IUIe.', target:'#nextBtn'},
+      {screen:'nuevo.html', label:'Paso 3 · Iniciar con ClaveÚnica', instr:'Inicia sesión con ClaveÚnica y completa el formulario paso a paso. Al presentar recibes tu comprobante con el IUIe.', target:['#fvcNext','#nextBtn']},
       {screen:'ciudadano.html', label:'Paso 4 · Seguir el trámite', instr:'Vuelve a «Mis trámites» para ver el avance; te avisamos automáticamente cada cambio de estado.', target:'.tram'}
     ]},
     tipo:{title:'Crear un tipo de trámite (no-code)', role:'config', steps:[
@@ -302,7 +302,7 @@
   .fv-modal{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r-4);box-shadow:var(--sh-lg);overflow:hidden;animation:fvpop .3s var(--ease)}
   .fv-modal.wide{max-width:620px}
   @keyframes fvpop{from{transform:translateY(10px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-  /* modo embebido (deck): shell acotado — sin selector de rol, ayuda ni bandera (no exploran todo el sistema) */
+  /* modo embebido (demo.html): shell acotado — sin selector de rol, ayuda ni bandera (no exploran todo el sistema) */
   .fv-embed .fv-role, .fv-embed .fv-help, .fv-embed .fv-flag{display:none!important}
   /* la navegación (sidebar y topnav) queda como CONTEXTO visual, no clickeable — el reproductor guía los pasos */
   .fv-embed .side .nav-item, .fv-embed .topnav-links a, .fv-embed .brand[href], .fv-embed .muni{pointer-events:none!important}
@@ -347,18 +347,20 @@
   function esc(s){ return s; }
 
   const cf = file();
-  // modo embebido (?embed=1): la pantalla se muestra dentro del deck de presentación →
+  // modo embebido (?embed=1): la pantalla se muestra dentro del reproductor de demo.html →
   // sin onboarding automático ni barra de proceso guiado (se vería el modal tapando la pantalla).
   const IS_EMBED = /[?&]embed=1/.test(location.search);
   if(IS_EMBED){
-    // el deck puede fijar el rol del flujo con ?as=<rol> (p.ej. nuevo.html?embed=1&as=ciudadano)
+    // el reproductor puede fijar el rol del flujo con ?as=<rol> (p.ej. nuevo.html?embed=1&as=ciudadano)
     var _asRole=(location.search.match(/[?&]as=([a-z]+)/)||[])[1];
     if(_asRole && byId(_asRole)){ try{ localStorage.setItem('fvRole', _asRole); }catch(e){} }
     try{ document.body.classList.add('fv-embed'); }catch(e){}
-    // ACOTAR: dentro del deck NO se navega a otras pantallas/roles — el reproductor controla los pasos.
+    // ACOTAR: dentro de la demo NO se navega a otras pantallas/roles — el reproductor controla los pasos.
     // Se permite interactuar con el CONTENIDO del paso (formularios, pestañas, scroll); solo se
     // bloquea cualquier navegación de documento (enlaces a otra .html y botones onclick=location...).
-    document.addEventListener('click', function(e){
+    // 'auxclick' incluido: el clic con rueda abre el enlace en otra pestaña sin
+    // disparar 'click' → sin él se puede escapar del recorrido acotado.
+    var bloquearNav = function(e){
       var nav = e.target.closest && e.target.closest('a[href], [onclick]');
       if(!nav) return;
       var href = nav.getAttribute('href') || '';
@@ -366,6 +368,12 @@
       var navegaHref = href && href.charAt(0)!=='#' && !/^(javascript|mailto|tel):/i.test(href);
       var navegaJs = /location\s*\.\s*(href|assign|replace)|(^|[^.\w])location\s*=/.test(oc);
       if(navegaHref || navegaJs){ e.preventDefault(); e.stopPropagation(); return false; }
+    };
+    document.addEventListener('click', bloquearNav, true);
+    document.addEventListener('auxclick', bloquearNav, true);
+    // y sin menú contextual sobre enlaces no hay "abrir en pestaña nueva"
+    document.addEventListener('contextmenu', function(e){
+      if(e.target.closest && e.target.closest('a[href]')) e.preventDefault();
     }, true);
     // evita también el envío de formularios que redirigen de página
     document.addEventListener('submit', function(e){ e.preventDefault(); }, true);
@@ -668,10 +676,21 @@
   var _jhl=null,_jhlEl=null,_jhlBound=false;
   function _posJhl(){ if(!_jhl||!_jhlEl)return; var r=_jhlEl.getBoundingClientRect(); if(r.width===0&&r.height===0){ _jhl.style.display='none'; return; } _jhl.style.display='block'; var p=6; _jhl.style.top=(r.top-p)+'px'; _jhl.style.left=(r.left-p)+'px'; _jhl.style.width=(r.width+p*2)+'px'; _jhl.style.height=(r.height+p*2)+'px'; }
   function clearHighlight(){ if(_jhl){ _jhl.remove(); _jhl=null; } _jhlEl=null; if(_jhlBound){ window.removeEventListener('scroll',_posJhl,true); window.removeEventListener('resize',_posJhl); _jhlBound=false; } }
-  function highlightTarget(sel){
+  function highlightTarget(sel, tag){
     clearHighlight(); if(!sel) return false;
-    var el=document.querySelector(sel); if(!el) return false;
-    _jhlEl=el; _jhl=document.createElement('div'); _jhl.className='fv-jhl'; _jhl.innerHTML='<span class="tag">Haz clic aquí</span>';
+    // sel puede ser una LISTA de selectores: se usa el primero que exista y sea
+    // visible (una misma pantalla cambia de controles según el rol o el paso).
+    if(Object.prototype.toString.call(sel)==='[object Array]'){
+      for(var i=0;i<sel.length;i++){ if(highlightTarget(sel[i], tag)) return true; }
+      return false;
+    }
+    var el; try{ el=document.querySelector(sel); }catch(e){ return false; }
+    if(!el) return false;
+    // un objetivo sin caja (oculto en este paso) no se puede señalar: que el
+    // llamador lo sepa y pruebe otro selector en vez de dibujar un anillo invisible.
+    if(!el.getClientRects().length) return false;
+    _jhlEl=el; _jhl=document.createElement('div'); _jhl.className='fv-jhl';
+    _jhl.innerHTML='<span class="tag"></span>'; _jhl.firstChild.textContent = tag || 'Haz clic aquí';
     document.body.appendChild(_jhl);
     try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){}
     _posJhl(); setTimeout(_posJhl,380);
@@ -712,6 +731,10 @@
     document.getElementById('fvJexit').onclick=exitJourney;
   }
   window.fvStartJourney=startJourney;
+  // El reproductor de la demo (demo.html) dirige el resaltado DENTRO del iframe:
+  // mismo origen → llama a estas dos funciones sobre contentWindow en cada paso.
+  window.fvHighlight=highlightTarget;
+  window.fvClearHighlight=clearHighlight;
 
   // añadir lanzador de procesos guiados al pie del menú de rol
   (function(){

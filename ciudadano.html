@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis trámites · Portal ciudadano</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .cz-main{max-width:840px;margin:0 auto;padding:var(--s-6) var(--s-5)}
+  .cz-hero{display:flex;align-items:center;gap:var(--s-4);margin-bottom:var(--s-6)}
+  .cz-hero .av{width:52px;height:52px;border-radius:50%;background:var(--brand);color:var(--text-on-brand);display:grid;place-items:center;font-weight:700;font-size:var(--fs-20)}
+  .tram{border:1px solid var(--border);border-radius:var(--r-3);background:var(--surface);margin-bottom:12px;overflow:hidden}
+  .tram-head{display:flex;align-items:center;gap:14px;padding:16px;cursor:pointer;user-select:none}
+  .tram-head:hover{background:var(--surface-2)}
+  .tram-head .muni-dot{width:34px;height:34px;border-radius:var(--r-2);display:grid;place-items:center;font-weight:700;font-size:var(--fs-13);color:#0A0C0B;flex-shrink:0}
+  .tram-head img.muni-dot{width:32px;height:36px;border-radius:0;background:none}
+  .tram-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border-faint)}
+  .tram.open .tram-body{display:block}
+  .tram.open .chev{transform:rotate(180deg)}
+  .chev{transition:transform .2s var(--ease);color:var(--text-3);margin-left:auto}
+</style>
+</head>
+<body>
+<header class="topnav">
+  <a class="brand" href="index.html">
+    <svg class="seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    <b>Expediente Municipal</b><small>· Lemon</small>
+  </a>
+  <nav class="topnav-links">
+    <a href="index.html">Acceso</a>
+    <a href="funcionario.html">Funcionario</a>
+    <a href="bandeja.html">Bandeja</a>
+    <a href="nuevo.html">Crear</a>
+    <a href="expediente.html">Expediente</a>
+    <a href="recursos.html">Recursos</a>
+    <a href="notificaciones.html">Notificaciones</a>
+    <a href="caja.html">Caja</a>
+    <a href="fiscalizacion.html">Fiscalización</a>
+    <a href="concejo.html">Concejo</a>
+    <a href="supervisor.html">Supervisión</a>
+    <a href="admin.html">Administración</a>
+    <a href="eipd.html">EIPD</a>
+    <a href="ciudadano.html" class="active">Portal ciudadano</a>
+    <a href="movil.html">App terreno</a>
+  </nav>
+  <div class="topnav-right">
+    <button class="btn btn-ghost btn-sm" onclick="toast('2 notificaciones marcadas como leídas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg><span class="badge brand" style="height:18px">2</span></button>
+    <span class="chip"><img class="pf" style="width:20px;height:20px" src="assets/people/maria.svg" alt="">M. González</span>
+  </div>
+</header>
+
+<div class="cz-main">
+  <div class="cz-hero">
+    <img class="av pf" src="assets/people/maria.svg" alt="">
+    <div style="flex:1"><div class="eyebrow">Sesión con ClaveÚnica</div><h1 style="font-size:var(--fs-25)">Hola, María</h1><p class="muted">Todos tus trámites municipales en un solo lugar.</p></div>
+    <a class="btn btn-primary" href="catalogo.html" style="height:44px;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Iniciar un trámite</a>
+  </div>
+
+  <div class="card" style="margin-bottom:var(--s-5);border:1px solid var(--brand);background:linear-gradient(150deg,var(--brand-soft),transparent 70%);padding:var(--s-5)">
+    <div class="row between" style="gap:var(--s-4);flex-wrap:wrap;align-items:flex-start">
+      <div>
+        <div class="eyebrow" style="color:var(--brand)">Trámites en línea</div>
+        <h3 style="font-size:var(--fs-20);margin-top:2px">¿Necesitas hacer un trámite?</h3>
+        <p class="muted" style="margin-top:2px">Elige una categoría o explora todos los disponibles. Solo necesitas tu ClaveÚnica.</p>
+      </div>
+      <a class="btn btn-primary" href="catalogo.html" style="flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Ver todos los trámites</a>
+    </div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:var(--s-4)">
+      <a class="chip" href="catalogo.html#obras" style="text-decoration:none;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Obras y construcción</a>
+      <a class="chip" href="catalogo.html#negocios" style="text-decoration:none;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Negocios y patentes</a>
+      <a class="chip" href="catalogo.html#vehiculos" style="text-decoration:none;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M5 17h14M6 17l1-6h10l1 6M8 11l1-4h6l1 4"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>Vehículos</a>
+      <a class="chip" href="catalogo.html#certificados" style="text-decoration:none;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>Certificados</a>
+      <a class="chip" href="catalogo.html#rentas" style="text-decoration:none;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5a2.5 2 0 012.5-1.5c1.4 0 2.5.7 2.5 1.8 0 2.4-5 1.3-5 3.6 0 1.1 1.1 1.8 2.5 1.8a2.5 2 0 002.5-1.5"/></svg>Rentas y pagos</a>
+      <a class="chip" href="catalogo.html#social" style="text-decoration:none;cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M12 21s-7-4.5-7-9a4 4 0 017-2.5A4 4 0 0119 12c0 4.5-7 9-7 9z"/></svg>Social</a>
+    </div>
+  </div>
+
+  <div class="banner info" style="margin-bottom:var(--s-5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><b>Vista unificada, datos de cada comuna</b><p>Consultamos en tiempo real a cada municipalidad donde tienes trámites. Nada se copia a un registro central.</p></div></div>
+
+  <div class="g-3 grid" style="margin-bottom:var(--s-5)">
+    <div class="kpi"><div class="lbl">En trámite</div><div class="val tnum">3</div></div>
+    <div class="kpi"><div class="lbl">Necesitan tu respuesta</div><div class="val tnum" style="color:var(--warning)">1</div></div>
+    <div class="kpi"><div class="lbl">Finalizados</div><div class="val tnum">7</div></div>
+  </div>
+
+  <div class="toolbar">
+    <h3 style="font-size:var(--fs-16)">Mis trámites</h3>
+    <div class="grow"></div>
+    <div class="seg" id="comunaFilter"><button class="on" data-c="all">Todas</button><button data-c="nunoa">Ñuñoa</button><button data-c="prov">Providencia</button><button data-c="valpo">Valparaíso</button></div>
+  </div>
+
+  <div id="tramList">
+    <!-- needs response -->
+    <div class="tram open" data-c="nunoa">
+      <div class="tram-head" onclick="this.parentElement.classList.toggle('open')">
+        <img class="muni-dot" src="assets/comunas/nunoa.svg" alt="Ñuñoa">
+        <div style="flex:1;min-width:0"><div style="font-weight:600">Patente comercial — Cafetería «Grano y Hoja»</div><div class="tiny dim">Ñuñoa · IUIe 13120-2026-004790 · ingresado 10 jul</div></div>
+        <span class="badge observado"><span class="g"></span>Requiere respuesta</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="tram-body">
+        <div class="banner warn mt-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><b>Observación de la municipalidad</b><p>Falta el certificado de recepción sanitaria. Tienes 8 días hábiles para subsanar (art. 31).</p></div></div>
+        <div class="row mt-4" style="gap:8px"><button class="btn btn-primary" onclick="openSubsanar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Responder observación</button><a class="btn btn-secondary" href="mi-tramite.html">Ver detalle</a></div>
+      </div>
+    </div>
+    <!-- en tramite -->
+    <div class="tram" data-c="nunoa">
+      <div class="tram-head" onclick="this.parentElement.classList.toggle('open')">
+        <img class="muni-dot" src="assets/comunas/nunoa.svg" alt="Ñuñoa">
+        <div style="flex:1;min-width:0"><div style="font-weight:600">Permiso de edificación — ampliación</div><div class="tiny dim">Ñuñoa · IUIe 13120-2026-004821 · ingresado 14 jul</div></div>
+        <span class="badge revision"><span class="g"></span>En revisión</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="tram-body">
+        <div class="steps mt-4"><div class="step done"><span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><path d="M20 6L9 17l-5-5"/></svg></span><span class="bar"></span></div><div class="step done"><span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><path d="M20 6L9 17l-5-5"/></svg></span><span class="bar"></span></div><div class="step current"><span class="node">3</span><span class="bar"></span></div><div class="step"><span class="node">4</span></div></div>
+        <div class="step-labels"><span class="on">Ingresado</span><span class="on">Admisible</span><span class="on">En revisión</span><span>Resuelto</span></div>
+        <p class="muted mt-4">Tu solicitud está siendo revisada por la Dirección de Obras. Te avisaremos por correo, SMS y esta app.</p>
+      </div>
+    </div>
+    <div class="tram" data-c="prov">
+      <div class="tram-head" onclick="this.parentElement.classList.toggle('open')">
+        <img class="muni-dot" src="assets/comunas/providencia.svg" alt="Providencia">
+        <div style="flex:1;min-width:0"><div style="font-weight:600">Permiso de circulación 2026</div><div class="tiny dim">Providencia · IUIe 13123-2026-118840 · pagado</div></div>
+        <span class="badge revision"><span class="g"></span>En revisión</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="tram-body"><p class="muted mt-4">Pago recibido. El padrón digital se emitirá en 24-48 h y llegará a tu correo.</p></div>
+    </div>
+    <div class="tram" data-c="nunoa">
+      <div class="tram-head" onclick="this.parentElement.classList.toggle('open')">
+        <img class="muni-dot" src="assets/comunas/nunoa.svg" alt="Ñuñoa">
+        <div style="flex:1;min-width:0"><div style="font-weight:600">Certificado de número domiciliario</div><div class="tiny dim">Ñuñoa · emitido 12 jul</div></div>
+        <span class="badge resuelto"><span class="g"></span>Finalizado</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="tram-body"><div class="row mt-4" style="gap:8px"><button class="btn btn-primary" onclick="toast('Descargando certificado firmado (PDF/A)')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Descargar certificado</button><button class="btn btn-secondary" onclick="toast('Verificando folio…')">Verificar autenticidad</button></div></div>
+    </div>
+  </div>
+
+  <!-- empty state (shown when a comuna has no trámites) -->
+  <div id="czEmpty" class="hide" style="text-align:center;padding:var(--s-8) var(--s-4);color:var(--text-3)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" style="width:48px;height:48px;margin:0 auto var(--s-4)"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/></svg>
+    <div style="color:var(--text-1);font-weight:600;font-size:var(--fs-16)">No tienes trámites en <span id="czComuna"></span></div>
+    <p style="margin:6px 0 var(--s-4)">Cuando inicies uno, aparecerá aquí automáticamente.</p>
+    <a class="btn btn-secondary" href="catalogo.html">Iniciar un trámite</a>
+  </div>
+</div>
+
+<!-- modal subsanación (responder observación) -->
+<div class="modal-bg" id="subModal">
+  <div class="modal wide">
+    <div class="modal-head"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" style="width:20px;height:20px"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg><h3>Responder observación</h3><button class="x" onclick="closeSub()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <div class="banner warn" style="margin-bottom:var(--s-4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><div class="b-body"><b>Patente comercial · 004790</b><p>Falta el certificado de recepción sanitaria. Tienes <b>8 días hábiles</b> para subsanar (art. 31).</p></div></div>
+      <div class="field"><label>Adjunta el documento que falta</label>
+        <div id="dropZone" onclick="fakeUpload()" style="border:1.5px dashed var(--border-strong);border-radius:var(--r-3);padding:22px;text-align:center;color:var(--text-3);cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.6" style="width:26px;height:26px;margin:0 auto 6px"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></svg>
+          <div style="color:var(--text-1);font-weight:600">Certificado de recepción sanitaria</div><div class="tiny">Toca para adjuntar · PDF</div>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Comentario <span class="opt">— opcional</span></label><input class="input" placeholder="Adjunto el certificado solicitado."></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeSub()">Cancelar</button><button class="btn btn-primary" id="subSend" disabled onclick="closeSub();toast('Documento enviado · el municipio reanuda el plazo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Enviar respuesta</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Listo</span></div>
+
+<script>
+function toast(m){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function openSubsanar(){document.getElementById('subModal').classList.add('open')}
+function closeSub(){document.getElementById('subModal').classList.remove('open')}
+document.getElementById('subModal').addEventListener('click',e=>{if(e.target.id==='subModal')closeSub()});
+function fakeUpload(){const d=document.getElementById('dropZone');d.style.borderColor='var(--brand)';d.style.background='var(--brand-soft)';d.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" style="width:26px;height:26px;margin:0 auto 6px"><path d="M20 6L9 17l-5-5"/></svg><div style="color:var(--text-1);font-weight:600">certificado-sanitario.pdf</div><div class="tiny dim">1,2 MB · cargado</div>';document.getElementById('subSend').disabled=false;toast('Documento adjuntado')}
+const names={nunoa:'Ñuñoa',prov:'Providencia',valpo:'Valparaíso'};
+document.querySelectorAll('#comunaFilter button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#comunaFilter button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  const c=b.dataset.c;let vis=0;
+  document.querySelectorAll('#tramList .tram').forEach(t=>{const show=c==='all'||t.dataset.c===c;t.style.display=show?'':'none';if(show)vis++});
+  document.getElementById('czEmpty').classList.toggle('hide',vis>0);
+  document.getElementById('czComuna').textContent=names[c]||'';
+});
+</script>
+<script src="flujo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
